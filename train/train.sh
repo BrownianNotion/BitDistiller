@@ -1,4 +1,4 @@
-export MODEL_PATH='/home/ubuntu/BitDistiller/models/Qwen2.5-1.5B/'
+export MODEL_PATH='/home/ubuntu/BitDistiller/models/TinyLlama_v1.1/'
 export SAVE_PATH=$2
 export MASTER_ADDR="localhost"
 export MASTER_PORT="1321"
@@ -37,4 +37,4 @@ deepspeed --num_gpus=1 train.py \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip /home/ubuntu/BitDistiller/quantization/clip_cache/Qwen2.5-1.5B/int2-g128.pt
+    --clip /home/ubuntu/BitDistiller/quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt

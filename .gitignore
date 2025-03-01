@@ -1,5 +1,6 @@
 **/__pycache__/
 
+models/TinyLlama_v1.1/
 data/datasets
 
 quantization/clip_cache/

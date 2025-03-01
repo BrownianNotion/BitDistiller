@@ -387,6 +387,10 @@ def train():
     trainer.train()
     trainer.save_state()
     safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
+    
+    # clean up distributed
+    if os.environ.get('LOCAL_RANK') is not None:
+        torch.distributed.destroy_process_group()
 
 if __name__ == "__main__":
     train()
