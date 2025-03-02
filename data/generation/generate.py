@@ -235,6 +235,7 @@ def main(rank, args):
             for item in all_outputs[:len(gen_dataset)]:
                 f.write(json.dumps(item) + '\n')
     dist.barrier()
+    dist.destroy_process_group()
 
 
 if __name__ == "__main__":

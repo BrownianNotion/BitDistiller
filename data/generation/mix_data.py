@@ -3,8 +3,8 @@ import random
 
 all_outputs = []
 
-json_path1 = "/home/ubuntu/BitDistiller/data/datasets/qwen2.5-1.5b/wikitext_T0.7_N1024_S42_32.json"
-json_path2 = "/home/ubuntu/BitDistiller/data/datasets/qwen2.5-1.5b/alpaca_T0.7_N1024_S42_16.json"
+json_path1 = "/home/ubuntu/BitDistiller/data/datasets/tinyllama_v1.1/wikitext_T0.7_N1024_S42_32.json"
+json_path2 = "/home/ubuntu/BitDistiller/data/datasets/tinyllama_v1.1/alpaca_T0.7_N1024_S42_32.json"
 
 with open(json_path1, 'r') as f:
     dataset_for_eval = f.readlines()
@@ -20,6 +20,6 @@ for line in dataset_for_eval:
 
 random.shuffle(all_outputs)
 
-with open('../datasets/qwen2.5-1.5b/mix_wiki_alpaca_48.json', 'w') as f:
+with open('../datasets/tinyllama_v1.1/mix_wiki_alpaca_64.json', 'w') as f:
     for item in all_outputs:
         f.write(json.dumps(item) + '\n')
