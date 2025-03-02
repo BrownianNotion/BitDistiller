@@ -180,6 +180,57 @@ class SteInt2AsymQuantizer(nn.Module):
         x = x.reshape(org_w_shape)
 
         return x
+    
+class SteInt1AsymQuantizer(nn.Module):
+    def __init__(self, q_group_size=64):
+        super().__init__()
+        self.q_group_size = q_group_size
+        self.bit = 1
+    def forward(self, x):
+        # Save original shape for final reshape
+        org_w_shape = x.shape
+
+        # Reshape so each row is one group if q_group_size > 0
+        if self.q_group_size > 0:
+            assert org_w_shape[-1] % self.q_group_size == 0 # Last dimension must be divisible by q_group_size
+            x = x.reshape(-1, self.q_group_size)
+        assert x.dim() == 2 # Tensor should be 2D after grouping
+
+        # Compute the per-row min and max
+        max_val = x.amax(dim=1, keepdim=True)  # (num_groups, 1)
+        min_val = x.amin(dim=1, keepdim=True)  # (num_groups, 1)
+
+        # Define the min and max integer values
+        # TODO: Move This Hardcoded Value somewhere so it's not
+        # repeated in inference time?
+        max_int = 2 ** self.bit - 1  # == 1
+        min_int = 0
+
+        # Avoid zero denominator by clamping the scale
+        scale = (max_val - min_val).clamp(min=1e-5)
+        # zero_point is how we map min_val => 0 code, max_val => 1 code
+        zeros = (-torch.round(min_val / scale)).clamp_(min_int, max_int)
+
+        # Ensure we have no NaNs
+        assert torch.isnan(scale).sum() == 0
+        assert torch.isnan(x).sum() == 0
+
+        # Transform float -> integer in {0,1}
+        # using Round STE, clamp to [0,1]
+        x_int = torch.clamp(
+            Round.apply(x / scale) + zeros, min_int, max_int
+        )
+
+        # Transform integer -> float by removing zero_point, then scaling
+        x_q = (x_int - zeros) * scale
+
+        # Double-check no NaNs introduced
+        assert torch.isnan(x_q).sum() == 0
+
+        # Reshape back to the original weight shape
+        x_q = x_q.reshape(org_w_shape)
+
+        return x_q
 
 class SteN2F3Quantizer(nn.Module):
     def __init__(self, q_group_size=128):
