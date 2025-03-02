@@ -56,8 +56,8 @@ Our results is running by following 3 steps:
 1. Get the Clipping result
     ```bash
     cd BitDistiller/quantization
-
-    CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path <model_path> --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/hf-llama2-7b/int2-g128.pt
+    ~ 8 min
+    CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1/int2-g128.pt
     ```
 2. Get the Teacher Generation Data (Using vllm would be much faster)
     ```bash
@@ -73,10 +73,10 @@ Our results is running by following 3 steps:
     ```bash
     # torchrun
     cd BitDistiller/data/generation
+    ~ 1-2 min setup + 27s/size-16 batch
+    bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 32
 
-    bash generate.sh <model_path> wikitext ../datasets/hf-llama-2-7b/ 16 3000
-
-    bash generate.sh <model_path> alpaca ../datasets/hf-llama-2-7b/ 16 5000
+    bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 32
 
     # change to path in .py
     python mix_data.py
@@ -89,7 +89,7 @@ Our results is running by following 3 steps:
 
     cd train
     
-    bash train.sh ../data/datasets/hf-llama-2-7b/mix_wiki_alpaca_8000.json ./ckpts/hf-llama-2-7b/int2-g128/ ./logs/hf-llama-2-7b/int2-g128/ 4
+    bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_64.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 1
     ```
 </details>
 
@@ -165,18 +165,26 @@ Our results is running by following 3 steps:
 
 
 * Test PPL on WikiText-2
+Works out of the box
   ```bash
   cd test/general
 
-  python wiki_ppl.py --model ../../train/ckpts/hf-llama-2-7b/int2-g128/checkpoint-200/ --quant_type int --bits 2 --group_size 128
+  python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
   ```
+Needed to replace deprecated load_metric, 
+https://discuss.huggingface.co/t/cant-import-load-metric-from-datasets/107524
 * Test MMLU
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/hf-llama-2-7b/int2-g128/checkpoint-200/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
   ```
 * Test Common-sense QA Tasks
+
+hellaswag is hellaslow 10 min, 46355 iterations ~10 min
+all datasets work out of the box except arc_challenge,
+since it involves a subset of ai2_arc. Need to figure out
+how to just get the subset.
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/hf-llama-2-7b/int2-g128/checkpoint-200/ --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/  --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
   ```
 
 </details>

@@ -11,7 +11,7 @@ test/humaneval/preds/
 train/ckpts/
 train/logs/
 
-data/
+data/datasets
 
 inference/quant_cache/
 

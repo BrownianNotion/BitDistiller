@@ -1,5 +1,6 @@
 transformers==4.31.0
 datasets
+evaluate
 deepspeed
 sentencepiece
 tensorboardX
