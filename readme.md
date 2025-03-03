@@ -74,9 +74,10 @@ Our results is running by following 3 steps:
     # torchrun
     cd BitDistiller/data/generation
     ~ 1-2 min setup + 27s/size-16 batch
-    bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 32
+    ~ 3hr25min to generate in total, ~1hr20min wikitext, 2hr5min alpaca
+    bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 3000
 
-    bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 32
+    bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 5000
 
     # change to path in .py
     python mix_data.py

@@ -1,9 +1,6 @@
 **/__pycache__/
 
 models/TinyLlama_v1.1/
-data/datasets
-
-quantization/clip_cache/
 
 test/gsm8k/preds/
 test/humaneval/preds/
@@ -11,10 +8,7 @@ test/humaneval/preds/
 train/ckpts/
 train/logs/
 
-data/datasets
-
 inference/quant_cache/
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
