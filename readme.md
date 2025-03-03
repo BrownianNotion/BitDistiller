@@ -83,6 +83,8 @@ Our results is running by following 3 steps:
     python mix_data.py
     ```
 3. Run KD-base QAT
+    Estimate 1h 15 min per epoch which is pretty good, we could 
+    actually to afford to train for 4 epochs is we wanted to, though it may be best to keep it to 1-2.
     ```bash
     # Specify the pre-trained model path
     # Specify the num_gpus and batch_size according to your GPU devices
@@ -90,7 +92,8 @@ Our results is running by following 3 steps:
 
     cd train
     
-    bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_64.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 1
+
+    bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 1
     ```
 </details>
 

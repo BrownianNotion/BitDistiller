@@ -17,16 +17,16 @@ deepspeed --num_gpus=1 train.py \
     --seed 42 \
     --per_device_train_batch_size 4 \
     --per_device_eval_batch_size 4 \
-    --gradient_accumulation_steps 1 \
+    --gradient_accumulation_steps 8 \
     --gradient_checkpointing True \
     --evaluation_strategy "steps" \
     --eval_steps 4 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
-    --save_steps 4 \
-    --save_total_limit 15 \
-    --learning_rate 8e-6 \
-    --lr_scheduler_type "constant" \
+    --save_steps 20 \
+    --save_total_limit 3 \
+    --learning_rate 2e-5 \
+    --lr_scheduler_type "cosine" \
     --weight_decay 0. \
     --logging_steps 1 \
     --report_to "tensorboard" \
