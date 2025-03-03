@@ -20,6 +20,7 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
     # w           [co, ci]      -> [co, 1, n_group, group size]
     # input_feat  [n_token, ci] -> [1, n_token, n_group, group size]
 
+    # Group weight and input feature tensor into chunks for quantization
     group_size = q_config["q_group_size"] if q_config["q_group_size"] > 0 else w.shape[1]
 
     input_feat = input_feat.view(-1, input_feat.shape[-1])
@@ -30,6 +31,8 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
     oc_batch_size = 256 if w.shape[0] % 256 == 0 else 64  # prevent OOM
     
     assert w.shape[0] % oc_batch_size == 0
+
+    # Initialize lists to store best min/max values per batch
     w_all = w
     best_max_val_all = []
     best_min_val_all = []
