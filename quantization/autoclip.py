@@ -6,6 +6,7 @@ import os
 import sys
 from clip_utils import *
 from quantizer import pseudo_quantize_tensor, pseudo_quantize_n2f3_tensor
+from quantizer import SteInt1AsymQuantizer
 from tqdm import tqdm
 from collections import defaultdict
 import functools
@@ -49,30 +50,68 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
         input_feat = input_feat.to(w.device)
         org_out = (input_feat * w).sum(dim=-1)  # co, n_token, n_group
 
-        for i_s_p in range(int(max_shrink * n_grid)):
-            max_val = org_max_val * (1 - i_s_p / n_grid)
-            for i_s_n in range(int(max_shrink * n_grid)):
-                min_val = org_min_val * (1 - i_s_n / n_grid)
-                # min_val = - max_val
-                cur_w = torch.clamp(w, min_val, max_val)
-                if q_config["quant_type"] == "int":
-                    q_w = pseudo_quantize_tensor(cur_w, n_bit=n_bit, zero_point=True, q_group_size=q_config['q_group_size'])
-                elif q_config["quant_type"] == "nf3":
-                    q_w = pseudo_quantize_n2f3_tensor(cur_w, q_group_size=q_config['q_group_size'])
-                else:
-                    quant_type = q_config["quant_type"]
-                    raise ValueError(f"Has no support {quant_type}. Valid quant_type:[int, nf3]")
-                    
-                cur_out = (input_feat * q_w).sum(dim=-1)
+        # Why 1-bit quantization may need special handling:
+        # 
+        # - The standard quantization formula divides weights into `2^n_bit - 1` levels.
+        #   For `n_bit=1`, this results in only two codes (0,1), which may not optimally
+        #   represent the weight distribution.
+        # - 1-bit quantization often benefits from **symmetric binarization** (e.g., {-v, +v})
+        #   rather than asymmetric min-max scaling.
+        # - The existing auto-clipping logic searches for independent min/max values,
+        #   but for 1-bit, a single threshold (e.g., ±max) is usually more stable.
+        # - Some 1-bit methods use `sign(w) * scale`, which isn’t directly supported
+        #   by `pseudo_quantize_tensor()`, making a specialized approach preferable.
+        #
+        # Using `pseudo_quantize_tensor(n_bit=1)` will work but may yield suboptimal results.
+        # A dedicated 1-bit quantizer (e.g., `SteInt1AsymQuantizer`) can ensure better accuracy.
+        if n_bit == 1: # Specialized path for 1-bit
+            # We do a single-loop over “max_val” and set min_val = -max_val
+            for i_s_p in range(int(max_shrink * n_grid)):
+                # Shrink the original max by factor
+                new_max = org_max_val * (1 - i_s_p / n_grid)
+                # Force symmetrical
+                new_min = -new_max
 
+                # Clamp
+                cur_w = torch.clamp(w, new_min, new_max)
+
+                # Use a specialized 1-bit quantizer (or pseudo_quantize_tensor with n_bit=1).
+                q_w = SteInt1AsymQuantizer(q_group_size=q_config['q_group_size'])(cur_w)
+
+                # Evaluate error
+                cur_out = (input_feat * q_w).sum(dim=-1)
                 err = (cur_out - org_out).pow(2).mean(dim=1).view(min_errs.shape)
 
-                del cur_w
-                del cur_out
-                cur_best_idx = err < min_errs
-                min_errs[cur_best_idx] = err[cur_best_idx]
-                best_max_val[cur_best_idx] = max_val[cur_best_idx]
-                best_min_val[cur_best_idx] = min_val[cur_best_idx]
+                # Update if better
+                better_idx = err < min_errs
+                min_errs[better_idx] = err[better_idx]
+                best_max_val[better_idx] = new_max[better_idx]
+                best_min_val[better_idx] = new_min[better_idx]
+        else: # General case
+            for i_s_p in range(int(max_shrink * n_grid)):
+                max_val = org_max_val * (1 - i_s_p / n_grid)
+                for i_s_n in range(int(max_shrink * n_grid)):
+                    min_val = org_min_val * (1 - i_s_n / n_grid)
+                    # min_val = - max_val
+                    cur_w = torch.clamp(w, min_val, max_val)
+                    if q_config["quant_type"] == "int":
+                        q_w = pseudo_quantize_tensor(cur_w, n_bit=n_bit, zero_point=True, q_group_size=q_config['q_group_size'])
+                    elif q_config["quant_type"] == "nf3":
+                        q_w = pseudo_quantize_n2f3_tensor(cur_w, q_group_size=q_config['q_group_size'])
+                    else:
+                        quant_type = q_config["quant_type"]
+                        raise ValueError(f"Has no support {quant_type}. Valid quant_type:[int, nf3]")
+                        
+                    cur_out = (input_feat * q_w).sum(dim=-1)
+
+                    err = (cur_out - org_out).pow(2).mean(dim=1).view(min_errs.shape)
+
+                    del cur_w
+                    del cur_out
+                    cur_best_idx = err < min_errs
+                    min_errs[cur_best_idx] = err[cur_best_idx]
+                    best_max_val[cur_best_idx] = max_val[cur_best_idx]
+                    best_min_val[cur_best_idx] = min_val[cur_best_idx]
 
         best_max_val_all.append(best_max_val)
         best_min_val_all.append(best_min_val)
