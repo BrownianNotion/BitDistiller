@@ -53,7 +53,7 @@ class KDTrainer(Trainer):
 
         kl_loss = beta_prob * reverse_kl + (1 - beta_prob) * forward_kl
         kl_loss *= mask
-        kl_loss = kl_loss.sum(-1).mean()
+        kl_loss = kl_loss.sum() / mask.sum()
         return kl_loss
 
     def jsd_loss(self, labels, student_logits, teacher_logits, beta_prob):

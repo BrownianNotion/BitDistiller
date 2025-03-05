@@ -374,7 +374,7 @@ def train():
             prob1 = torch.max(prob1, dim=-1).values 
             mask = (batch["labels"] != -100)
             prob1 *= mask
-            prob += prob1.mean()
+            prob += prob1.sum() / mask.sum()
         mean_prob = prob / training_args.cakld_steps
         mean_prob = torch.Tensor(mean_prob.to(teacher_model.device))
         dist.all_reduce(mean_prob, op=dist.ReduceOp.SUM)
