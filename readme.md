@@ -173,13 +173,13 @@ Works out of the box
   ```bash
   cd test/general
 
-  python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+  python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/ --quant_type int --bits 2 --group_size 128
   ```
 Needed to replace deprecated load_metric, 
 https://discuss.huggingface.co/t/cant-import-load-metric-from-datasets/107524
 * Test MMLU
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tiny_llama_v1.1/int2-g128/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
   ```
 * Test Common-sense QA Tasks
 

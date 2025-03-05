@@ -356,13 +356,14 @@ def train():
         print("Get the main Prob!")
         probDataloader = DataLoader(
             data_module['train_dataset'], 
-            shuffle=True, 
+            shuffle=False, 
             collate_fn=data_module['data_collator'], 
             batch_size=training_args.per_device_train_batch_size,
             drop_last=True,
         )
 
         prob = 0
+        prob_unmasked = 0
         for step, batch in tqdm(enumerate(probDataloader)):
             if step > training_args.cakld_steps:
                 break
@@ -371,16 +372,30 @@ def train():
                 outputs = teacher_model(**batch)
             logits = outputs.get("logits").contiguous()
             prob1 = torch.nn.functional.softmax(logits, dim=-1)
-            prob1 = torch.max(prob1, dim=-1).values 
-            mask = (batch["labels"] != -100).float()
+            prob1 = torch.max(prob1, dim=-1).values
+            prob_unmasked1 = prob1.clone()
+
+            mask = (batch["labels"] != -100)
             prob1 *= mask
             prob += prob1.mean()
+
+            prob_unmasked += prob_unmasked1.mean()
+
         mean_prob = prob / training_args.cakld_steps
         mean_prob = torch.Tensor(mean_prob.to(teacher_model.device))
         dist.all_reduce(mean_prob, op=dist.ReduceOp.SUM)
         mean_prob = mean_prob / dist.get_world_size()
-        print(f"Get the coefficient: {mean_prob}")
 
+        mean_prob_unmasked = prob_unmasked / training_args.cakld_steps
+        mean_prob_unmasked = torch.Tensor(mean_prob_unmasked.to(teacher_model.device))
+        dist.all_reduce(mean_prob_unmasked, op=dist.ReduceOp.SUM)
+        mean_prob_unmasked = mean_prob_unmasked / dist.get_world_size()
+
+        with open("Gamma.txt", "a+") as file:
+            file.write(f"Gamma: unmasked {mean_prob_unmasked} | masked {mean_prob} | samples={len(probDataloader.dataset)}\n")
+
+        dist.destroy_process_group()
+        import sys; sys.exit(0)
 
     if training_args.train_kd:
         trainer = KDTrainer(model=model, tokenizer=tokenizer, teacher_model=teacher_model, loss_type=training_args.kd_loss_type, mean_prob=mean_prob, args=training_args, **data_module)
