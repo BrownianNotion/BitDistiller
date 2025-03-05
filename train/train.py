@@ -376,8 +376,8 @@ def train():
             prob_unmasked1 = prob1.clone()
 
             mask = (batch["labels"] != -100)
-            prob1 *= mask
-            prob += prob1.mean()
+            # prob1 *= mask
+            prob += prob1[mask].mean()
 
             prob_unmasked += prob_unmasked1.mean()
 
@@ -392,7 +392,7 @@ def train():
         mean_prob_unmasked = mean_prob_unmasked / dist.get_world_size()
 
         with open("Gamma.txt", "a+") as file:
-            file.write(f"Gamma: unmasked {mean_prob_unmasked} | masked {mean_prob} | samples={len(probDataloader.dataset)}\n")
+            file.write(f"Gamma: unmasked {mean_prob_unmasked:.4f} | masked {mean_prob:.4f} | samples={len(probDataloader.dataset)}\n")
 
         dist.destroy_process_group()
         import sys; sys.exit(0)
