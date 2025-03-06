@@ -39,7 +39,7 @@ def mem_efficient_load_checkpoint(
     with tqdm(total=len(checkpoint_files)) as pbar:
         pbar.set_description("Loading checkpoint shards")
         for checkpoint_file in checkpoint_files:
-            checkpoint = torch.load(checkpoint_file, map_location=torch.device("cpu"))
+            checkpoint = torch.load(checkpoint_file, map_location=torch.device("cpu"), weights_only=True)
             model.load_state_dict(checkpoint, strict=False)
             # Force Python to clean up.
             del checkpoint
@@ -152,7 +152,7 @@ def load_awq_llama_fast(model, checkpoint, w_bit, group_size, device):
 
                 model.load_state_dict(safe_load(checkpoint))
             else:
-                model.load_state_dict(torch.load(checkpoint))
+                model.load_state_dict(torch.load(checkpoint, weights_only=True))
 
     # autotune_warmup(model)
 

@@ -323,7 +323,7 @@ def train():
             "q_group_size": training_args.q_group_size,  # whether to use group quantization
         }
         print("Loading pre-computed Clipping results from", training_args.clip)
-        clip_results = torch.load(training_args.clip)
+        clip_results = torch.load(training_args.clip, weights_only=True)
         apply_clip(model, clip_results)
         print("Clipping init successfully!")
 
