@@ -1,1 +1,0 @@
-bash train.sh ../data/datasets/TinyLlama_v1.1/mix_wiki_alpaca_64.json ./ckpts/TinyLlama_v1.1/int2-g128/ ./logs/TinyLlama_v1.1/int2-g128/ 1
