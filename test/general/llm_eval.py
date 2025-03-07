@@ -9,7 +9,7 @@ from transformers import (
 )
 import torch
 import sys
-from llm_cpp import Llama
+from llama_cpp import Llama
 
 sys.path.append("../")
 from test_utils import pseudo_quantize_model_weight
