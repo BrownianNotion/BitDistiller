@@ -9,6 +9,7 @@ from transformers import (
 )
 import torch
 import sys
+from llm_cpp import Llama
 
 sys.path.append("../")
 from test_utils import pseudo_quantize_model_weight
@@ -34,11 +35,27 @@ if __name__ == '__main__':
         args.test_set = True
     
     
-    model = AutoModelForCausalLM.from_pretrained(args.model, 
-                                                torch_dtype=torch.bfloat16, 
-                                                use_safetensors=True,
-                                                device_map='auto'
-                                                )
+    # Load GGUF Model Using llama_cpp
+    model = Llama(
+        model_path=args.model,
+    )
+
+    # Wrap Model for lm_eval
+    class LlamaCppAdaptor:
+        def __init__(self, model):
+            self.model = model
+
+        def generate(self, requests):
+            results = []
+            for request in requests:
+                prompt = request[0]
+                output = self.model(prompt, max_tokens=512)
+                results.append(output['choices'][0]['text'])
+            return results
+
+        def loglikelihood(self, requests):
+            raise NotImplementedError("Log likelihood scoring is not yet supported.")
+
         
     if args.quant_type is not None:
         q_config = {
@@ -49,13 +66,9 @@ if __name__ == '__main__':
             model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
         )
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-
-    model.eval()
-
     task_names = utils.pattern_match(args.eval_tasks.split(","), tasks.ALL_TASKS)
 
-    lm_eval_model = LMEvalAdaptor(args.model, model, tokenizer, args.batch_size)
+    lm_eval_model = LlamaCppAdaptor(model)
     
     results = evaluator.simple_evaluate(
                     model=lm_eval_model,

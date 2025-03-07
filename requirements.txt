@@ -5,6 +5,7 @@ deepspeed
 sentencepiece
 tensorboardX
 accelerate==0.28.0 # higher versions break transformers
+llama_cpp
 
 einops
 importlib-resources
