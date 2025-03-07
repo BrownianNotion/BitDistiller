@@ -93,7 +93,7 @@ Our results is running by following 3 steps:
     cd train
     
 
-    bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 1
+    bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 4
     ```
 </details>
 
