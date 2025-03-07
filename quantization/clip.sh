@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1/int2-g128.pt
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1-GGUF --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1-GGUF/int2-g128.pt
