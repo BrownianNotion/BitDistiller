@@ -23,4 +23,3 @@ random.shuffle(all_outputs)
 with open('../datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json', 'w') as f:
     for item in all_outputs:
         f.write(json.dumps(item) + '\n')
-
