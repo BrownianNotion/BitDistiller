@@ -177,10 +177,14 @@ Works out of the box
   ```
 Needed to replace deprecated load_metric, 
 https://discuss.huggingface.co/t/cant-import-load-metric-from-datasets/107524
+
 * Test MMLU
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../models/TinyLlama_v1.1 --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --batch_size 8 --quant_type int --num_fewshot 0
   ```
+To speed up MMLU (and effectively evaluate model in approximately 10 minutes) we must change num_fewshot. By reducing num_fewshot to zero, the above script takes 9:02 mins to run all requests on a NVIDIA A40 with 9 vCPU and 50 GB RAM [Note: By decreasing the batch_size to 2, the above script takes 10:01 mins to run all requests].
+There are concerns to doing this though. Changing the number of fewshot examples leads to a reduction in the MMLU accuracy. For num_fewshot 5, MMLU accuracy is 26.36 [Note: the original TinyLlama paper, https://arxiv.org/pdf/2401.02385, reports MMLU accuracy of 26.58 for 5 shot testing]. However, reducing num_fewshot to 0, TinyLlama_v1.1 achieves an accuracy on MMLU of 25.12. Therefore, to stay consistent with the evaluation methodology of TinyLlama and BitDistiller we probably shouldn't change num_fewshot.
+
 * Test Common-sense QA Tasks
 
 hellaswag is hellaslow 10 min, 46355 iterations ~10 min
