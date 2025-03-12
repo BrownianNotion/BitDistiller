@@ -24,8 +24,8 @@ This is a student project with the goal being to explore unanswered questions fr
 
 ## 0. Overall Workflow Summary
 0. Create new branch, clone repo on a cloud GPU instance. 
-1. Run setup
-2. Run [Pre-Training](#2-pre-training); clipping/data_gen (if applicable)
+1. Run [Setup](#1-setup)
+2. Run [Pre-Training](#2-pre-training) if applicable
 3. Run [Training](#3-training-workflow) 
 4. Run [Eval](#4-eval)
 5. [Upload model](#5-sharing-the-model) to hf with metrics.
