@@ -18,17 +18,17 @@ This is a student project with the goal being to explore unanswered questions fr
 ## Contents
 0. [Summary](#0-overall-workflow-summary)
 1. [Setup](#1-setup)
-2. [Training](#2-training)
-3. [Eval](#3-eval)
-4. [Training workflow](#4-training-workflow)
+2. [Pre-Training](#2-pre-training)
+3. [Training workflow](#3-training-workflow)
+4. [Eval](#4-eval)
 
 ## 0. Overall Workflow Summary
 0. Create new branch, clone repo on a cloud GPU instance. 
 1. Run setup
-2. Run clipping/data_gen (if applicable)
-3. Run Training (see [section 2](#2-training)/[section 4](#4-training-workflow))
-4. Run Eval
-5. Upload model to hf with metrics.
+2. Run [Pre-Training](#2-pre-training); clipping/data_gen (if applicable)
+3. Run [Training](#3-training-workflow) 
+4. Run [Eval](#4-eval)
+5. [Upload model](#5-sharing-the-model) to hf with metrics.
 6. **Delete instance!!**
 
 
@@ -38,7 +38,7 @@ Ensure CUDA version is 12.4. Run `./setup.sh` to setup env/install packages. Act
 source BitDistillerVenv/bin/activate
 ```
 
-## 2. Training
+## 2. Pre-Training
 With all steps, change the output paths (eg. for clipped weights, checkpoints) to match
 the name of your experiment.
 
@@ -61,38 +61,15 @@ bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1
 bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 5000
 
 # change to path in .py
-python mix_data.p
+python mix_data.py
 ```
 
-### Train model
-Train the model for 4 epochs on the data set `mix_wiki_alpaca_8000.json`. Make sure to change the `bits`, `quant_type`, and `--clip` (initial clipped weights) path and any other training parameters needed in `train.sh`. If doing a dry-run, change the parameters in`train_dry_run.sh` instead. 
+## 3. Training workflow
+The model is by default trained on the dataset `mix_wiki_alpaca_8000.json`. Make sure to change the `bits`, `quant_type`, and `--clip` (initial clipped weights) path and any other training parameters needed in `train.sh`. If doing a dry-run, change the parameters in`train_dry_run.sh` instead. 
 
-**Please read the [Section 4](#4-training-workflow) on training workflow below for more details before running an experiment.**
-```
-cd train
-bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 4
-```
-
-## 3. Eval
-Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run as follows:
-```
-cd test/general
-
-# PPL
-python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
-
-# QA
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
-
-# MMLU
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
-```
-
-
-## 4. Training workflow
-### Summary
+### Summary of steps
 1. Commit **all** changes made by your experiment to a branch for reproducibility. This includes changes to `train.sh` and other configs other than dry run. 
-2. Rerun clipping/data generation if needed (see [section 2](#2-training)).
+2. Rerun clipping/data generation if needed (see [Pre-Training](#2-pre-training)).
 3. In `train/`, change `train_dry_run.sh` if needed and run `./dry_sun.sh` to check that your code works. This does a single step on a small dataset of 64 samples.
 4. (Skip if on vast.ai) If dry run succeeds, create a new tmux session:
 ```
@@ -102,7 +79,11 @@ If your ssh connection ever drops, your training will keep running. You may need
 ```
 tmux attach -t session_name
 ```
-5. Run the training command from [section 2](#2-training). Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
+5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
+```
+cd train
+bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int2-g128/ ./logs/tiny_llama_v1.1/int2-g128/ 4
+```
 
 ### Monitoring
 Run these commands in new terminals once actual training has started (i.e. you see two progress bars).
@@ -122,6 +103,21 @@ nvtop
 
 Signs your training has gone wrong (to be expanded):
 * The loss curve isn't going down after a few steps
+
+## 4. Eval
+Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run as follows:
+```
+cd test/general
+
+# PPL
+python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+
+# QA
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+
+# MMLU
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+```
 
 ## 5. Sharing the model
 Upload the model to hugging face and logs (which contain the files needed for the train/loss curves for tensorboard). This will help us easily share our work. This will be eventually automated, but for now do it manually and put in the metrics roughly according to this (there will be a yaml header on top of the `modelcard.md` where the metrics can be added).
