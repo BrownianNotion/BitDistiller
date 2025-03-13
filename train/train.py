@@ -260,24 +260,32 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, dat
 
 
 def train():
+    # Parse command-line arguments for model, data, and training configurations
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
+    # Set random seed for reproducibility
     random.seed(TrainingArguments.seed)
+    
+    # Get the number of GPUs available
     n_gpus = torch.cuda.device_count()
+    
+    # Define the maximum memory per GPU for model loading
     max_memory = f'36000MB'
     max_memory = {i: max_memory for i in range(n_gpus)}
     device_map = "auto"
 
+    # Override device mapping if model is extremely large (e.g., 34B parameters)
     if "34B" in model_args.model_name_or_path:
         device_map = None
 
-    # if we are in a distributed setting, we need to set the device map and max memory per device
+    # Handle distributed training settings
     if os.environ.get('LOCAL_RANK') is not None:
         local_rank = int(os.environ.get('LOCAL_RANK', '0'))
-        device_map = {'': local_rank}
+        device_map = {'': local_rank}  # Assigning device mapping per rank
         max_memory = {'': max_memory[local_rank]}
 
+    # Load the pre-trained model in bfloat16 precision and assign to available GPUs
     print(f"loading {model_args.model_name_or_path} model")
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
@@ -285,6 +293,7 @@ def train():
         device_map=device_map,
     )
 
+    # Load the tokenizer associated with the model
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
@@ -293,6 +302,7 @@ def train():
         use_fast=False,
     )
 
+    # Ensure the tokenizer has the necessary special tokens
     pad_status = True
     if tokenizer.pad_token is None:
         print("tokenizer has not padding token")
@@ -311,22 +321,31 @@ def train():
             }
         )
 
+    # Prepare the dataset for supervised fine-tuning
     data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
     
+    # If quantization is enabled, convert model to QAT (Quantization-Aware Training)
     if training_args.quant_type is not None:
         print("converting the model to qat, this may take a while...")
-        model, _ = convertModelToQuant(model, compute_dtype=torch.bfloat16, quant_type=training_args.quant_type, q_group_size=training_args.q_group_size)
+        model, _ = convertModelToQuant(
+            model, 
+            compute_dtype=torch.bfloat16, 
+            quant_type=training_args.quant_type, 
+            q_group_size=training_args.q_group_size
+        )
 
+    # Apply precomputed asymmetric clipping if provided
     if training_args.clip is not None:
         q_config = {
-            "zero_point": True,  # by default True
-            "q_group_size": training_args.q_group_size,  # whether to use group quantization
+            "zero_point": True,  # Always use zero-point quantization
+            "q_group_size": training_args.q_group_size,  # Group-wise quantization
         }
         print("Loading pre-computed Clipping results from", training_args.clip)
         clip_results = torch.load(training_args.clip, weights_only=True)
         apply_clip(model, clip_results)
         print("Clipping init successfully!")
 
+    # If knowledge distillation (KD) is enabled, load a teacher model
     if training_args.train_kd:
         print("loading Teacher Model...")
         teacher_model = transformers.AutoModelForCausalLM.from_pretrained(
@@ -337,20 +356,24 @@ def train():
             device_map=device_map,
             max_memory=max_memory,
         )
-        teacher_model.eval()
+        teacher_model.eval()  # Set teacher model to evaluation mode
         teacher_model.cuda()
         for param in teacher_model.parameters():
-            param.requires_grad = False
-        teacher_model.config.use_cache = False
+            param.requires_grad = False  # Ensure teacher model parameters are frozen
+        teacher_model.config.use_cache = False  # Disable caching to save memory
+        
+        # Ensure teacher model also has the correct pad token
         if pad_status is False:
             smart_tokenizer_and_embedding_resize(
                 special_tokens_dict=dict(pad_token=DEFAULT_PAD_TOKEN),
                 tokenizer=tokenizer,
                 model=teacher_model,
             )
-        model.kd_loss_scale = 1.0
+        
+        model.kd_loss_scale = 1.0  # Initialize KD loss scaling factor
         print("Teacher Model loaded")
 
+    # Compute mean probability coefficient for CAKLD loss if enabled
     mean_prob=0
     if training_args.kd_loss_type == "cakld":
         print("Get the main Prob!")
@@ -375,18 +398,36 @@ def train():
             mask = (batch["labels"] != -100)
             prob1 *= mask  # both prob1/mask have shape [batch_size, sequence_len]
             prob += prob1.sum() / mask.sum()
+        
         mean_prob = prob / training_args.cakld_steps
         mean_prob = torch.Tensor(mean_prob.to(teacher_model.device))
-        dist.all_reduce(mean_prob, op=dist.ReduceOp.SUM)
+        dist.all_reduce(mean_prob, op=dist.ReduceOp.SUM)  # Synchronize across distributed training
         mean_prob = mean_prob / dist.get_world_size()
         print(f"Get the coefficient: {mean_prob}")
 
-
+    # Initialize the Trainer with the appropriate settings
     if training_args.train_kd:
-        trainer = KDTrainer(model=model, tokenizer=tokenizer, teacher_model=teacher_model, loss_type=training_args.kd_loss_type, mean_prob=mean_prob, args=training_args, **data_module)
+        trainer = KDTrainer(
+            model=model, 
+            tokenizer=tokenizer, 
+            teacher_model=teacher_model, 
+            loss_type=training_args.kd_loss_type, 
+            mean_prob=mean_prob, 
+            args=training_args, 
+            **data_module
+        )
     else:
-        trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
+        trainer = Trainer(
+            model=model, 
+            tokenizer=tokenizer, 
+            args=training_args, 
+            **data_module
+        )
+    
+    # Start training
     trainer.train()
+    
+    # Save training state and final model
     trainer.save_state()
     safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
     
