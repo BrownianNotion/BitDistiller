@@ -10,6 +10,7 @@ from quantizer import *
 
 # from ppq.core import CUDA
 def get_named_linears(module):
+    # TODO: nn.Linear vs Conv1D GPT2
     return {name: m for name, m in module.named_modules() if isinstance(m, nn.Linear)}
 
 def get_named_bnb_linears(module):

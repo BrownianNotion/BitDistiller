@@ -13,6 +13,8 @@ def convertModelToQuant(model,
         if current_key_name is None:
             current_key_name = []
         current_key_name.append(name)
+        
+        # TODO: deal with Conv1D which is used instead of linear in GPT2
         if (isinstance(module, nn.Linear)) and name not in modules_to_not_convert:
             in_features = module.in_features
             out_features = module.out_features

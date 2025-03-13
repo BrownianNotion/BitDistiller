@@ -1,6 +1,7 @@
 #TODO Dataset Path
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
-from transformers.models.llama.modeling_llama import LlamaForCausalLM
+from transformers import GPT2LMHeadModel
+from transformers.models.llama.modeling_llama import LlamaForCausalLM 
 import torch
 from datasets import load_dataset
 import random
@@ -116,6 +117,8 @@ def get_blocks(model):
         layers = model.model.layers
     elif "qwen" in str(model.__class__).lower():
         layers = model.model.layers
+    elif isinstance(model, GPT2LMHeadModel):
+        layers = model.transformer.h
     # elif isinstance(model, OPTForCausalLM):
     #     layers = model.model.decoder.layers
     # elif isinstance(model, BloomForCausalLM):
@@ -149,6 +152,10 @@ def move_embed(model, device):
     # elif isinstance(model, BloomForCausalLM):
     #     model.transformer.word_embeddings = model.transformer.word_embeddings.to(device)
     #     model.transformer.word_embeddings_layernorm = model.transformer.word_embeddings_layernorm.to(device)
+    elif isinstance(model, GPT2LMHeadModel):
+        model.transformer.wte = model.transformer.wte.to(device)
+        model.transformer.wpe = model.transformer.wpe.to(device)
+        model.transformer.drop = model.transformer.drop.to(device)
     elif "mpt" in str(model.__class__).lower():
         model.transformer.wte = model.transformer.wte.to(device)
         model.transformer.emb_drop = model.transformer.emb_drop.to(device)
@@ -158,6 +165,8 @@ def move_embed(model, device):
         raise NotImplementedError(type(model))
 
 def get_named_linears(module):
+    # TODO: modify this/relevant place to deal with Conv1D in GPT2, which is essentially
+    # nn.Linear with transposed weights.
     return {name: m for name, m in module.named_modules() if isinstance(m, nn.Linear)}
 
 def get_op_by_name(module, op_name):
