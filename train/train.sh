@@ -20,7 +20,7 @@ deepspeed --num_gpus=1 train.py \
     --gradient_accumulation_steps 4 \
     --gradient_checkpointing True \
     --evaluation_strategy "steps" \
-    --eval_steps 4 \
+    --eval_steps 20 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
     --save_steps 20 \
