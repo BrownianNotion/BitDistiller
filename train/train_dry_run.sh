@@ -33,8 +33,8 @@ deepspeed --num_gpus=1 train.py \
     --deepspeed config/zero.json \
     --bits 1 \
     --quant_type int1-asym \
-    --q_group_size 32 \
+    --q_group_size 64 \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/TinyLlama_v1.1/int1-g32.pt
+    --clip ../quantization/clip_cache/TinyLlama_v1.1/int1-g64.pt
