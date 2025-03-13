@@ -3,6 +3,8 @@
 sudo apt update
 # handling large files
 sudo apt install git-lfs 
+# gpu monitoring
+sudo apt install nvtop
 # make python3.9 venv (3.9 needed for BitDistiller) and
 # install required packages
 sudo apt install -y python3.9 python3.9-venv python3.9-dev

@@ -33,10 +33,39 @@ This is a student project with the goal being to explore unanswered questions fr
 
 
 ## 1. Setup
-Ensure CUDA version is 12.4. Run `./setup.sh` to setup env/install packages. Activate the venv with
+### Logging into a cloud GPU with ssh 
+If you haven't already done so on your local machine, do the steps [below](#generate-an-ssh-key-and-add-it-to-github) so that you can clone, pull, push etc. locally.
+#### Generate an ssh key
+```
+eval "$(ssh-agent -s)" # start ssh agent, not automatic on vast
+ssh-keygen -t ed25519 -C
+ssh-add; ssh-add -l
+cat ~/.ssh/id_ed25519.pub
+```
+Press enter when prompted for file name/passphrase to use defaults. Copy the entire contents of `cat` (including ssh-rsa and your email at the end) and add this to github under Settings > ssh keys.
+
+#### Logging into instance
+Add your local ssh key to your cloud GPU platform eg. Lambdalabs or vast.ai and create an instance with CUDA version 12.4. Login via vscode's remote ssh extension using 
+```
+ssh -i ~/.ssh/id_ed25519 -p port user@address # (+optional port forwarding with -L)
+```
+eg. on vast
+```
+ssh -i ~/.ssh/id_ed25519 -p 30077 root@185.150.27.254 -L 8080:localhost:8080
+```
+
+#### Working on your instance
+Repeat the setps in [Generate an ssh key](#generate-an-ssh-key-and-add-it-to-github) on your **remote instance** and clone the repo.
+```
+git clone git@github.com:BrownianNotion/BitDistiller.git
+```
+
+### Setting up the python environment
+Run `./setup.sh` to setup env/install packages. Activate the venv with
 ```
 source BitDistillerVenv/bin/activate
 ```
+Note that for vast.ai, your repo will be under `/workspace/BitDistiller`.
 
 ## 2. Pre-Training
 With all steps, change the output paths (eg. for clipped weights, checkpoints) to match
@@ -75,7 +104,7 @@ The model is by default trained on the dataset `mix_wiki_alpaca_8000.json`. Make
 ```
 tmux new -s session_name
 ```
-If your ssh connection ever drops, your training will keep running. You may need to reattch your session.
+If your ssh connection ever drops, your training will keep running. You may need to reattach your session.
 ```
 tmux attach -t session_name
 ```
@@ -97,7 +126,6 @@ tensorboard --logdir=logs/tiny_llama_v1.1/int2-g128/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
-sudo apt install nvtop
 nvtop
 ```
 
