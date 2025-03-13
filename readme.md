@@ -173,7 +173,7 @@ Works out of the box
   ```bash
   cd test/general
 
-  python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+  python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int1-g32 --quant_type int --bits 1 --group_size 32
   ```
 Needed to replace deprecated load_metric, 
 https://discuss.huggingface.co/t/cant-import-load-metric-from-datasets/107524
@@ -188,7 +188,7 @@ all datasets work out of the box except arc_challenge,
 since it involves a subset of ai2_arc. Need to figure out
 how to just get the subset.
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/  --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tiny_llama_v1.1/int1-g32/  --eval_tasks arc_easy,arc_challenge,winogrande,piqa --test_set --bits 1 --group_size 32 --quant_type int --num_fewshot 0 
   ```
 
 </details>
