@@ -89,9 +89,11 @@ bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1
 
 bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 20000
 
+# <30 min
 python generate_vllm.py --base_model ../../models/TinyLlama_v1.1 --dataset_name wikitext --out_path ./datasets/tinyllama_v1.1/ --max_sample 12000
 
-python generate_vllm.py --base_model ../../models/TinyLlama_v1.1--dataset_name alpaca --out_path ./datasets/tinyllama_v1.1/ --max_sample 20000
+# ~45 min
+python generate_vllm.py --base_model ../../models/TinyLlama_v1.1 --dataset_name alpaca --out_path ./datasets/tinyllama_v1.1/ --max_sample 20000
 
 # change to path in .py
 python mix_data.py

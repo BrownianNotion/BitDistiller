@@ -96,7 +96,6 @@ def extract_random_dataset(sources, targets, max_sample=None):
 
 def get_wiki_dataset(max_sample):
     wiki_dataset = load_dataset("wikitext", 'wikitext-2-raw-v1', split='train')
-    # wiki_dataset = load_dataset("/root/model/datasets/wikitext/wikitext", 'wikitext-2-raw-v1', split='train')
 
     wiki_long = []
     for text in wiki_dataset['text']:
