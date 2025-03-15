@@ -5,12 +5,19 @@ BATCH_SIZE=$4
 MAX_SAMPLE=$5
 
 # CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 \
-torchrun --nproc_per_node 1 --master_port 7830 generate.py \
-                        --base_model $MODEL_DIR \
-                        --dataset_name $DATASET \
-                        --out_path $OUTPUT \
-                        --batch_size $BATCH_SIZE \
-                        --max_sample $MAX_SAMPLE
+for temp in 1.0 1.3 1.65 2.0; do
+  echo "Running with temperature: $temp"
+  
+  torchrun --nproc_per_node 1 --master_port 7830 generate.py \
+    --base_model $MODEL_DIR \
+    --dataset_name $DATASET \
+    --out_path $OUTPUT \
+    --batch_size $BATCH_SIZE \
+    --max_sample $MAX_SAMPLE \
+    --temperature $temp
+    
+  echo "Completed run with temperature: $temp"
+done
 
 # Single Generate
 # CUDA_VISIBLE_DEVICES=0 /root/model/miniconda3/envs/qat/bin/torchrun single_generate.py \

@@ -85,8 +85,8 @@ Generate the data for (distillation) training. **Shouldn't need to be rerun unle
 ```
 cd data/generation
 
-bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 3000
-bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 5000
+bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 32
+bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 32
 
 # change to path in .py
 python mix_data.py
