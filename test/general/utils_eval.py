@@ -65,6 +65,7 @@ class LMEvalAdaptor(BaseLM):
 
     @property
     def device(self):
+        return "mps"  # for local runs
         return "cuda"
 
     def tok_encode(self, string: str):

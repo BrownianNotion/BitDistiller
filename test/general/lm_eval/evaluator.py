@@ -314,9 +314,19 @@ def evaluate(
             x if req.index is None else x[req.index] for x, req in zip(resps, reqs)
         ]
 
+        prev_task, current_doc_id = None, None
+        question_resps = []  # Initialize this before the loop
         for resp, (i, task_name, doc, doc_id) in zip(resps, requests_origin[reqtype]):
             process_res_queue[(task_name, doc_id)].append((i, resp))
 
+            # If switching to a new task or document, save the previous results
+            if prev_task is not None and (prev_task != task_name or current_doc_id != doc_id):
+                write_out_info[prev_task][current_doc_id]["prediction"] = np.argmax(question_resps).item()
+                question_resps = []  # Reset for the new document
+
+            question_resps.append(resp)
+            prev_task = task_name
+            current_doc_id = doc_id
             if write_out:
                 write_out_info[task_name][doc_id][f"logit_{i}"] = resp
                 task = task_dict[task_name]
@@ -328,6 +338,8 @@ def evaluate(
                     ]
                 else:
                     write_out_info[task_name][doc_id]["truth"] = task.doc_to_target(doc)
+        
+                write_out_info[task_name][doc_id]["prediction"] = np.argmax(resps).item()
 
     vals = collections.defaultdict(list)
 

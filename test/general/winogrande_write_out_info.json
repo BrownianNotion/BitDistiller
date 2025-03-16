@@ -1,0 +1,52 @@
+[
+    {
+        "doc_id": 0,
+        "prompt_0": "People think Samantha is embarassed, because Samantha made snide comments about the shirt Rebecca was wearing.",
+        "prompt_1": "People think Rebecca is embarassed, because Samantha made snide comments about the shirt Rebecca was wearing.",
+        "logit_0": -80.91246795654297,
+        "truth": 1,
+        "prediction": 0,
+        "logit_1": -82.47352600097656,
+        "acc": "False"
+    },
+    {
+        "doc_id": 1,
+        "prompt_0": "For her birthday gifts, Sarah was upset with the pearls, but felt the opposite about the rings she received. The pearls were fancier.",
+        "prompt_1": "For her birthday gifts, Sarah was upset with the pearls, but felt the opposite about the rings she received. The rings were fancier.",
+        "logit_0": -18.983842849731445,
+        "truth": 1,
+        "prediction": 0,
+        "logit_1": -19.051725387573242,
+        "acc": "False"
+    },
+    {
+        "doc_id": 2,
+        "prompt_0": "Erin knew the perfect gift for the wedding  shower, but Samantha had to do some research, because Erin was slightly acquainted with the bride.",
+        "prompt_1": "Erin knew the perfect gift for the wedding  shower, but Samantha had to do some research, because Samantha was slightly acquainted with the bride.",
+        "logit_0": -24.980615615844727,
+        "truth": 1,
+        "prediction": 1,
+        "logit_1": -24.189905166625977,
+        "acc": "True"
+    },
+    {
+        "doc_id": 3,
+        "prompt_0": "I wanted to build a bathroom on the third floor of the house but I couldn't because the bathroom would be too full.",
+        "prompt_1": "I wanted to build a bathroom on the third floor of the house but I couldn't because the floor would be too full.",
+        "logit_0": -21.360065460205078,
+        "truth": 1,
+        "prediction": 1,
+        "logit_1": -20.453235626220703,
+        "acc": "True"
+    },
+    {
+        "doc_id": 4,
+        "prompt_0": "At their high school's homecoming dance, Natalie stayed on the floor for the slow dance while Maria got food during it, because Natalie currently had a significant other.",
+        "prompt_1": "At their high school's homecoming dance, Natalie stayed on the floor for the slow dance while Maria got food during it, because Maria currently had a significant other.",
+        "logit_0": -30.823646545410156,
+        "truth": 0,
+        "prediction": 16,
+        "logit_1": -30.373489379882812,
+        "acc": "False"
+    }
+]
