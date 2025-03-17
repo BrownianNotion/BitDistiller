@@ -1,6 +1,7 @@
 from pytablewriter import LatexTableWriter
 import json
 import argparse
+import pathlib
 
 from huggingface_hub import HfApi
 
@@ -28,12 +29,10 @@ for metric in table.headers:
     else:
         results.append("")
 
-
 table.value_matrix = [results]
 
-# TODO: consider making this a temporary file, uploading within here
-temp_file_path = "README.md"
-with open(temp_file_path, "w+ ") as f:
+modelcard_path = pathlib.Path(args.metrics_file).parent / "README.md"
+with open(modelcard_path, "w+ ") as f:
     f.write(
         "**Metrics Table**:\n"
         "$$\n"
@@ -41,13 +40,9 @@ with open(temp_file_path, "w+ ") as f:
         "$$\n"
         )
 
-# optionally add the metrics to the yaml data too
-
 api = HfApi()
 api.upload_file(
-    path_or_fileobj=temp_file_path,
+    path_or_fileobj=modelcard_path,
     path_in_repo="README.md",
     repo_id=args.model_repo
 )
-
-# TODO: remove file
