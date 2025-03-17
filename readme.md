@@ -156,13 +156,16 @@ Check your login succeeded with
 ```
 huggingface-cli whoami
 ```
-Upload your model to hugging face with `upload_mode.sh`, which uploads `<model_path>` to a repo `your_username/model_name`. The third argument is optional and can be set to "overwrite" if you'd like to overwrite the model on an existing repo.
+Run `upload_model.sh`, which creates a new hugging face repo `your_username/model_name` and uploads your model from `<model_path>` to it.
 ```
-./upload_model.sh <model_path> <model_name> <overwrite>
+./upload_model.sh <model_path> <model_name>
 ```
+If the repo is already created, the script will display `{"error":"You already created this model repo","url": ...` but will still upload any new or edited files from the `model_path` folder. It does this under a new commit, so you don't need to worry about overwriting old work.
 
 Follow the following format for model_name:
-"\{base_model\}\_\{num\}bit\_\{quantisation method\}\_\{extra changes\}"
+```
+"{base_model}_{num}bit_{quantisation method}_{extra changes}"
+```
 where extra changes is a short description of other changes made such as new loss functions
 or architectural changes.
 
