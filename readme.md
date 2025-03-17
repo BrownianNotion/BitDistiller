@@ -148,5 +148,25 @@ CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v
 ```
 
 ## 5. Sharing the model
-Upload the model to hugging face and logs (which contain the files needed for the train/loss curves for tensorboard). This will help us easily share our work. This will be eventually automated, but for now do it manually and put in the metrics roughly according to this (there will be a yaml header on top of the `modelcard.md` where the metrics can be added).
-https://huggingface.co/BrownianNotion/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline
+Login to hugging face with your access token (generate one if you don't have one) with
+```
+huggingface-cli login
+```
+Check your login succeeded with
+```
+huggingface-cli whoami
+```
+Upload your model to hugging face with `upload_mode.sh`, which uploads `<model_path>` to a repo `your_username/model_name`. The third argument is optional and can be set to "overwrite" if you'd like to overwrite the model on an existing repo.
+```
+./upload_model.sh <model_path> <model_name> <overwrite>
+```
+
+Follow the following format for model_name:
+"\{base_model\}\_\{num\}bit\_\{quantisation method\}\_\{extra changes\}"
+where extra changes is a short description of other changes made such as new loss functions
+or architectural changes.
+
+**Example usage:**
+```
+./upload_model.sh train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 tinyllama_v1.1_1bit_int-asym_ce-loss
+```
