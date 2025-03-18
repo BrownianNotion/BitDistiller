@@ -6,8 +6,8 @@ import os
 
 
 def plot_histogram(data, title, save_path):
-    plt.figure(figsize=(8, 5))
-    plt.hist(data, bins=100, alpha=0.7)
+    # plt.figure(figsize=(8, 5))
+    plt.hist(data, bins=100, alpha=0.7, log=True, edgecolor="white")
     plt.title(title)
     plt.xlabel("Weight Values")
     plt.ylabel("Count")
