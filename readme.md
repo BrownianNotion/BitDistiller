@@ -162,10 +162,12 @@ Our results is running by following 3 steps:
 </details>
 
 ## 3. Evaluation
-### Example Srcipts
+### Example Scripts
 <details>
   <summary>LLaMA-2</summary>
-
+    Sanity checks models on Hugging Face on tasks. For sanity check we only need to evaluate the model on a small number of prompts. Therefore, a new argument 'num_questions' is used to specify the number of questions we run for each benchmark.
+    
+    Sanity checks for multiple choice questions are summarised in JSON files in test/general/{task_name}_write_out_info.json. Additionally, a separate file, test/general/results.json, summarises model performance on the tasks and questions it is tested on.
 
 
 * Test PPL on WikiText-2
@@ -180,10 +182,8 @@ https://discuss.huggingface.co/t/cant-import-load-metric-from-datasets/107524
 
 * Test MMLU
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../models/TinyLlama_v1.1 --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --batch_size 8 --quant_type int --num_fewshot 0
+  python sanity_check.py --model ../../models/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline--eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
   ```
-To speed up MMLU (and effectively evaluate model in approximately 10 minutes) we must change num_fewshot. By reducing num_fewshot to zero, the above script takes 9:02 mins to run all requests on a NVIDIA A40 with 9 vCPU and 50 GB RAM [Note: By decreasing the batch_size to 2, the above script takes 10:01 mins to run all requests].
-There are concerns to doing this though. Changing the number of fewshot examples leads to a reduction in the MMLU accuracy. For num_fewshot 5, MMLU accuracy is 26.36 [Note: the original TinyLlama paper, https://arxiv.org/pdf/2401.02385, reports MMLU accuracy of 26.58 for 5 shot testing]. However, reducing num_fewshot to 0, TinyLlama_v1.1 achieves an accuracy on MMLU of 25.12. Therefore, to stay consistent with the evaluation methodology of TinyLlama and BitDistiller we probably shouldn't change num_fewshot.
 
 * Test Common-sense QA Tasks
 
@@ -192,7 +192,7 @@ all datasets work out of the box except arc_challenge,
 since it involves a subset of ai2_arc. Need to figure out
 how to just get the subset.
   ```bash
-  CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/  --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+  python sanity_check.py --model ../../models/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline --eval_tasks arc_challenge,winogrande,hellaswag,piqa --batch_size 2 --num_questions 3 --bits 2 --num_fewshot 0
   ```
 
 </details>
