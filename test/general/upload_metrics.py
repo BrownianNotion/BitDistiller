@@ -1,22 +1,26 @@
+# script creates a modelcard (README.md) for the given repo and
+# auto generates a markdown table on the README.md from the metrics file
 from pytablewriter import MarkdownTableWriter
 import json
 import argparse
 import pathlib
 
-from huggingface_hub import HfApi, hf_hub_download 
-from huggingface_hub.utils import EntryNotFoundError
+from huggingface_hub import HfApi, ModelCard, ModelCardData
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--metrics_file", type=str, help="json file with model metrics")
-parser.add_argument("--model_repo", type=str, help="model repo to upload metric to")
+parser.add_argument("--metrics_json", type=str, help="json file with model metrics")
+parser.add_argument("--model_id", type=str, help="name of hugging face model repo without username.")
 
 args = parser.parse_args()
 
 table_writer = MarkdownTableWriter()
 table_writer.headers = ["PPL", "arc_easy", "arc_challenge", "piqa", "winogrande", "hellaswag", "mmlu"]
 
-with open(args.metrics_file, "r") as f:
+with open(args.metrics_json, "r") as f:
     results_json = json.load(f)
+
+    assert set(results_json.keys()).issubset(set(table_writer.headers))
+    assert set(["acc", "acc_stderr"]).issubset(set(results_json["arc_easy"].keys()))
 
 results = []
 for metric in table_writer.headers:
@@ -38,19 +42,20 @@ for metric in table_writer.headers:
 
 table_writer.value_matrix = [results]
 
-modelcard_path = pathlib.Path(args.metrics_file).parent / "README.md"
+card_data = ModelCardData(
+    language='en',
+    license='mit',
+    base_model="TinyLlama/TinyLlama_v1.1",
+)
 
-with open(modelcard_path, "w+") as f:
-    f.write(
-        "**Metrics Table**:\n"
-        )
-    table_writer.stream = f
-    table_writer.write_table()
+results_summary = table_writer.dumps()
+
+card = ModelCard.from_template(
+    card_data=card_data,
+    results_summary=results_summary,
+    template_path="modelcard_template.md"
+)
 
 api = HfApi()
-api.upload_file(
-    path_or_fileobj=modelcard_path,
-    path_in_repo="README.md",
-    repo_id=args.model_repo,
-    commit_message="Upload model metrics"
-)
+username = api.whoami()['name']
+card.push_to_hub(repo_id=f"{username}/{args.model_id}", commit_message="Upload model metrics")
