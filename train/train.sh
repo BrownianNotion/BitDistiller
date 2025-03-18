@@ -23,8 +23,8 @@ deepspeed --num_gpus=1 train.py \
     --eval_steps 0.25 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
-    --save_steps 500 \
-    --save_total_limit 1 \
+    --save_steps 200 \
+    --save_total_limit 3 \
     --learning_rate 2e-5 \
     --lr_scheduler_type "constant" \
     --weight_decay 0. \
