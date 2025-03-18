@@ -156,6 +156,8 @@ Check your login succeeded with
 ```
 huggingface-cli whoami
 ```
+Make sure your tensorboard logs (`.events.out.tfevents.{...}`) are inside your `<model_path>` folder (hugging face will auto-generate a [metrics tabs](https://huggingface.co/docs/hub/en/tensorboard) to display the loss curves). 
+
 Run `upload_model.sh`, which creates a new hugging face repo `your_username/model_name` and uploads your model from `<model_path>` to it.
 ```
 ./upload_model.sh <model_path> <model_name>
