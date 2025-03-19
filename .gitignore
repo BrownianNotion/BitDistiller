@@ -1,6 +1,7 @@
 **/__pycache__/
 
 models/TinyLlama_v1.1/
+models/Llama-2-7b-hf/
 
 test/gsm8k/preds/
 test/humaneval/preds/

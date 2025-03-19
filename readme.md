@@ -110,7 +110,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/int2-g128/ ./ckpts/tinyllama_v1.1/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/int2-g128/ ./ckpts/tinyllama_v1.1/int2-g128/runs/ 4
 ```
 
 ### Monitoring
@@ -127,7 +127,6 @@ tensorboard --logdir=logs/tiny_llama_v1.1/int2-g128/ --port=8008
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
 nvtop
 ```
-
 Signs your training has gone wrong (to be expanded):
 * The loss curve isn't going down after a few steps
 
