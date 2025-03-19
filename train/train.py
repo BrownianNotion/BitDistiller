@@ -49,6 +49,10 @@ DEFAULT_UNK_TOKEN = "</s>"
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="facebook/opt-125m")
+    teacher_model_path: Optional[str] = field(
+        default=None,
+        metadata={"help": "Path to the teacher model for knowledge distillation"}
+    )
 
 
 @dataclass
@@ -330,7 +334,7 @@ def train():
     if training_args.train_kd:
         print("loading Teacher Model...")
         teacher_model = transformers.AutoModelForCausalLM.from_pretrained(
-            model_args.model_name_or_path,
+            model_args.teacher_model_path,
             load_in_4bit=False,
             load_in_8bit=False,
             torch_dtype=torch.bfloat16,
