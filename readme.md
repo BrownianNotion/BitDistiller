@@ -83,12 +83,12 @@ CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 
 ```
 
 ### Generate Teacher Data
-Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json`.
+Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json`.
 ```
 cd data/generation
 
-bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 3000
-bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 5000
+bash generate.sh ../../models/Llama-2-7b-hf wikitext ../datasets/Llama-2-7b-hf/ 16 3000
+bash generate.sh ../../models/Llama-2-7b-hf alpaca ../datasets/Llama-2-7b-hf/ 16 5000
 
 # change to path in .py
 python mix_data.py
