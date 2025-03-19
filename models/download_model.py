@@ -1,4 +1,5 @@
 from huggingface_hub import snapshot_download
+import os
 
 # Model repo on Hugging Face
 model_name = "TinyLlama/TinyLlama_v1.1"
