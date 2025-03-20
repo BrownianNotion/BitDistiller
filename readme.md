@@ -167,12 +167,12 @@ python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --q
 To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
 ```
 cd test/general
-bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128 int 2 
+bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 int 2 
 ```
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/metrics.json --model_id 2-bit-baseline
+python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 metrics.json --model_id 2-bit-baseline
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
