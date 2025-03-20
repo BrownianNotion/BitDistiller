@@ -14,9 +14,6 @@ import json
 sys.path.append("../")
 from test_utils import pseudo_quantize_model_weight
 
-
-
-
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

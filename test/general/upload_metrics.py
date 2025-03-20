@@ -39,7 +39,7 @@ for metric in table_writer.headers:
             scale_factor = 1 if metric == "PPL" else 100
             results.append(f"{scale_factor * results_json[metric]:.2f}")
     else:
-        # blank (eg. mmlu/hellaswag may be blank because they take 
+        # blank (eg. mmlu may be blank because they take 
         # long to run and we can run later)
         results.append("-")
 
