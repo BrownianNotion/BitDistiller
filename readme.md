@@ -122,7 +122,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=logs/tiny_llama_v1.1/int2-g128/ --port=8008
+tensorboard --logdir=ckpts/tinyllama_v1.1/int2-g128/runs/ -g128/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
