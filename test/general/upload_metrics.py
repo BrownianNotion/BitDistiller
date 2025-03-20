@@ -5,7 +5,7 @@ import json
 import argparse
 import pathlib
 
-from huggingface_hub import HfApi, ModelCard, ModelCardData
+from huggingface_hub import HfApi, ModelCard, ModelCardData, create_repo
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--metrics_json", type=str, help="json file with model metrics")
@@ -14,13 +14,16 @@ parser.add_argument("--model_id", type=str, help="name of hugging face model rep
 args = parser.parse_args()
 
 table_writer = MarkdownTableWriter()
-table_writer.headers = ["PPL", "arc_easy", "arc_challenge", "piqa", "winogrande", "hellaswag", "mmlu"]
+table_writer.headers = ["PPL", "arc_easy", "arc_challenge", "piqa", "winogrande", "hellaswag", "mmlu", "QA Avg"]
 
 with open(args.metrics_json, "r") as f:
     results_json = json.load(f)
 
     assert set(results_json.keys()).issubset(set(table_writer.headers))
-    assert set(["acc", "acc_stderr"]).issubset(set(results_json["arc_easy"].keys()))
+    
+    for metric in table_writer.headers:
+        if metric in results_json and isinstance(results_json[metric], dict):
+            assert set(["acc", "acc_stderr"]).issubset(set(results_json[metric].keys()))
 
 results = []
 for metric in table_writer.headers:
@@ -58,4 +61,5 @@ card = ModelCard.from_template(
 
 api = HfApi()
 username = api.whoami()['name']
+create_repo(repo_id=args.model_id, repo_type="model", exist_ok=True)
 card.push_to_hub(repo_id=f"{username}/{args.model_id}", commit_message="Upload model metrics")

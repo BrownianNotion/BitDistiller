@@ -125,7 +125,7 @@ def llama_eval(model, testenc, dev, seqlen = 2048, model_path=None):
     print()
     
     with open(f"{model_path}/metrics.json", "w+") as f:
-        f.write({"PPL": ppl.item()})
+        json.dump({"PPL": ppl.item()}, f, indent=4)
 
     model.config.use_cache = use_cache
 

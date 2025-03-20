@@ -161,7 +161,23 @@ python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --q
 ```
 
 ## 5. Eval
-Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run as follows:
+### Summary
+**Make sure you're logged into hugging face first**, see [uploading the model](#4-uploading-the-model-to-hugging-face).
+
+To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
+```
+cd test/general
+bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128 int 2 
+```
+Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
+user name.
+```
+python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/metrics.json --model_id 2-bit-baseline
+```
+**Note**: this does not run MMLU by default as it is expensive. 
+
+### More information
+Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run individually as follows:
 ```
 cd test/general
 

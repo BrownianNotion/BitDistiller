@@ -91,11 +91,13 @@ if __name__ == '__main__':
 
             print(mmlu_results)
 
-            results_dict = json.load(f"{args.model}/metrics.json")
+            with open(f"{args.mode}/metrics.json", "r") as f:
+                results_dict = json.load(f)
+
             results_dict.update(mmlu_results)
             
             with open(f"{args.model}/metrics.json", "w+") as f:
-                f.dump(results_dict, f, indent=4)
+                json.dump(results_dict, f, indent=4)
     else:
         for key in results['results']:
             acc_sum += results['results'][key]['acc']
@@ -105,9 +107,11 @@ if __name__ == '__main__':
             avg_acc = acc_sum / count
             print("QA Avg:", avg_acc)
 
-            results_dict = json.load(f"{args.model}/metrics.json")
+            with open(f"{args.model}/metrics.json", "r") as f:
+                results_dict = json.load(f)
+
             results_dict.update(results['results'])
             results_dict["QA Avg"] = avg_acc
             
             with open(f"{args.model}/metrics.json", "w+") as f:
-                f.dump(results_dict, f, indent=4)
+                json.dump(results_dict, f, indent=4)
