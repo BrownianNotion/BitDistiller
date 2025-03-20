@@ -128,7 +128,6 @@ class KDTrainer(Trainer):
             self,
             labels,
             student_outputs,
-            teacher_outputs,
             student_logits,
             teacher_logits,
             beta_prob,
@@ -194,7 +193,6 @@ class KDTrainer(Trainer):
                 kd_loss = self.ce_plus_cakld_loss(
                     inputs['labels'],
                     student_outputs,
-                    teacher_outputs,
                     student_logits,
                     teacher_logits,
                     self.mean_prob,
