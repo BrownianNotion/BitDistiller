@@ -168,9 +168,6 @@ class KDTrainer(Trainer):
         # get attributes
         student_logits = student_outputs.get("logits")
 
-        if not return_outputs:
-            del student_outputs
-
         # torch.save(student_logits, "/root/model/acr_duda/code/rej_analysis/sft_student_logits.pt")
         # torch.save(teacher_logits, "/root/model/acr_duda/code/rej_analysis/sft_teacher_logits.pt")
         # torch.save(inputs, "/root/model/acr_duda/code/rej_analysis/sft_inputs.pt")
@@ -197,6 +194,9 @@ class KDTrainer(Trainer):
                     teacher_logits,
                     self.mean_prob,
                 )
+
+        if not return_outputs:
+            del student_outputs
                 
         del teacher_logits
         del student_logits
