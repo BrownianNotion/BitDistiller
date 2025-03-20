@@ -34,6 +34,7 @@ class KDTrainer(Trainer):
         self.loss_type = loss_type
         self.mean_prob = mean_prob
         self.ce_loss_none = CrossEntropyLoss(reduction="none")
+        self.criterion = CrossEntropyLoss(reduction="none")
 
     def cakld_loss(self, labels, student_logits, teacher_logits, beta_prob):
         mask = (labels != -100)
@@ -122,6 +123,37 @@ class KDTrainer(Trainer):
 
     def mse_loss(self, student_logits, teacher_logits):
         return mse_loss(student_logits, teacher_logits)
+
+    def ce_plus_cakld_loss(
+            self,
+            labels,
+            student_outputs,
+            teacher_outputs,
+            student_logits,
+            teacher_logits,
+            beta_prob,
+            T=5.0,
+        ):
+        ce_loss = self.criterion(student_outputs, labels)
+        
+        mask = (labels != -100)
+        # reverse
+        teacher_output_log_prob = F.log_softmax(teacher_logits/T, dim=2)
+        # Compute the softmax of the student's logits (approximate distribution)
+        student_output_soft = F.softmax(student_logits/T, dim=2)
+        # Calculate the reverse KL Divergence (KL(teacher_logits || student_logits))
+        reverse_kl = F.kl_div(teacher_output_log_prob, student_output_soft, reduction="none").sum(-1)
+
+        # forward
+        student_output_log_prob = F.log_softmax(student_logits/T, dim=2)
+        teacher_output_soft = F.softmax(teacher_logits/T, dim=2)
+        # Calculate the reverse KL Divergence (KL(teacher_logits || student_logits))
+        forward_kl = F.kl_div(student_output_log_prob, teacher_output_soft, reduction="none").sum(-1)
+
+        kl_loss = beta_prob * reverse_kl + (1 - beta_prob) * forward_kl
+        kl_loss *= mask   # both kl_loss/mask have shape [batch, sequence_len]
+        kl_loss = kl_loss.sum(-1).mean()
+        return T**2 * kl_loss + ce_loss
     
     def compute_loss(self, model, inputs, return_outputs=False):
         with torch.no_grad():
@@ -158,6 +190,15 @@ class KDTrainer(Trainer):
                 kd_loss = self.cakld_loss(inputs['labels'], student_logits, teacher_logits, self.mean_prob)
             elif self.loss_type == "jsd":
                 kd_loss = self.jsd_loss(inputs['labels'], student_logits, teacher_logits, 0.5)
+            elif self.loss_type == "ce_plus_cakld":
+                kd_loss = self.ce_plus_cakld_loss(
+                    inputs['labels'],
+                    student_outputs,
+                    teacher_outputs,
+                    student_logits,
+                    teacher_logits,
+                    self.mean_prob,
+                )
                 
         del teacher_logits
         del student_logits
