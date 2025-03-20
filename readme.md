@@ -158,20 +158,13 @@ huggingface-cli whoami
 ```
 Make sure your tensorboard logs (`.events.out.tfevents.{...}`) are inside your `<model_path>` folder (hugging face will auto-generate a [metrics tabs](https://huggingface.co/docs/hub/en/tensorboard) to display the loss curves). 
 
-Run `upload_model.sh`, which creates a new hugging face repo `your_username/model_name` and uploads your model from `<model_path>` to it.
-```
-./upload_model.sh <model_path> <model_name>
-```
-If the repo is already created, the script will display `{"error":"You already created this model repo","url": ...` but will still upload any new or edited files from the `model_path` folder. It does this under a new commit, so you don't need to worry about overwriting old work.
+Run `upload_model.py`, specifying args `<model_path>`, `<bits>` and optionally
+`--quant_type, --extra_changes, --base_model, --ovewrite`. Run `upload_model.py -h` for help on the options. 
 
-Follow the following format for model_name:
-```
-"{base_model}_{num}bit_{quantisation method}_{extra changes}"
-```
-where extra changes is a short description of other changes made such as new loss functions
-or architectural changes.
+This uploads the model to the hugging face repo `your_username/model_name`. Model name follows the convention
+*"{base_model}\_{num}bit\_{quantisation method}(\_{extra changes})"*.
 
-**Example usage:**
+**Example Usage**
 ```
-./upload_model.sh train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 tinyllama_v1.1_1bit_int-asym_ce-loss
+python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
 ```

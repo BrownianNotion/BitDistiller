@@ -6,9 +6,9 @@ parser.add_argument("model_path", type=str, help="path to model checkpoint/folde
 parser.add_argument("bits", type=int, help="num of bits the model is quantised to")
 parser.add_argument("--quant_type", type=str, default="int", help="Quantisation method")
 parser.add_argument("--extra_changes", type=str, default="", help="String summarising extra changes such as new losses/architecture. Eg. ce_loss")
-parser.add_argument("--base_model", type=str, default="TinyLlama_v1.1", help="Base model, defaults to TinyLlama_v1.1")
+parser.add_argument("--base_model", type=str, default="TinyLlama_v1.1", help="Base model that we quantised, defaults to TinyLlama_v1.1")
 parser.add_argument("--overwrite", type=bool, default=False, 
-        help="Whether to overwrite hugging face repo if model repo already exists."
+        help="Whether to overwrite hugging face repo if model repo already exists. "
         "Specify ANY argument to set to True (argparse is weird in this way), don't specify for False."
         "Note, even if you accidentally ovewrite data with this option, you can revert the latest commit" \
         "on hugging face")
