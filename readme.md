@@ -21,15 +21,16 @@ This is a student project with the goal being to explore unanswered questions fr
 1. [Setup](#1-setup)
 2. [Pre-Training](#2-pre-training)
 3. [Training workflow](#3-training-workflow)
-4. [Eval](#4-eval)
+4. [Uploading the Model](#4-uploading-the-model-to-hugging-face)
+5. [Eval](#5-eval)
 
 ## 0. Overall Workflow Summary
 0. Create new branch, clone repo on a cloud GPU instance. 
 1. Run [Setup](#1-setup)
 2. Run [Pre-Training](#2-pre-training) if applicable
 3. Run [Training](#3-training-workflow) 
-4. Run [Eval](#4-eval)
-5. [Upload model](#5-sharing-the-model) to hf with metrics.
+4. [Upload model](#4-uploading-the-model-to-hugging-face) to hugging face.
+5. Run [Eval](#5-eval) to generate metrics.
 6. **Delete instance!!**
 
 
@@ -132,7 +133,34 @@ nvtop
 Signs your training has gone wrong (to be expanded):
 * The loss curve isn't going down after a few steps
 
-## 4. Eval
+## 4. Uploading the model to hugging face 
+As eval takes time, begin uploading the model as soon as training has finished if the loss curves and validation metrics look good.
+
+### Logging into hugging face
+Login to hugging face with your access token (generate one if you don't have one) with
+```
+huggingface-cli login
+```
+Check your login succeeded with
+```
+huggingface-cli whoami
+```
+
+### Uploading the model
+Make sure your tensorboard logs (`.events.out.tfevents.{...}`) are inside your `<model_path>` folder (hugging face will auto-generate a [metrics tabs](https://huggingface.co/docs/hub/en/tensorboard) to display the loss curves). 
+
+Run `upload_model.py`, specifying args `<model_path>`, `<bits>` and optionally
+`--quant_type, --extra_changes, --base_model, --ovewrite`. Run `upload_model.py -h` for help on the options. 
+
+This uploads the model to the hugging face repo `your_username/model_name`. Model name follows the convention
+*"{base_model}\_{num}bit\_{quantisation method}(\_{extra changes})"*.
+
+**Example Usage**
+```
+python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
+```
+
+## 5. Eval
 Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run as follows:
 ```
 cd test/general
@@ -145,26 +173,4 @@ CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1
 
 # MMLU
 CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
-```
-
-## 5. Sharing the model
-Login to hugging face with your access token (generate one if you don't have one) with
-```
-huggingface-cli login
-```
-Check your login succeeded with
-```
-huggingface-cli whoami
-```
-Make sure your tensorboard logs (`.events.out.tfevents.{...}`) are inside your `<model_path>` folder (hugging face will auto-generate a [metrics tabs](https://huggingface.co/docs/hub/en/tensorboard) to display the loss curves). 
-
-Run `upload_model.py`, specifying args `<model_path>`, `<bits>` and optionally
-`--quant_type, --extra_changes, --base_model, --ovewrite`. Run `upload_model.py -h` for help on the options. 
-
-This uploads the model to the hugging face repo `your_username/model_name`. Model name follows the convention
-*"{base_model}\_{num}bit\_{quantisation method}(\_{extra changes})"*.
-
-**Example Usage**
-```
-python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
 ```
