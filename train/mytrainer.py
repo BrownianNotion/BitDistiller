@@ -136,7 +136,7 @@ class KDTrainer(Trainer):
         ce_loss = self.criterion(
             student_outputs.logits.view(-1, student_outputs.logits.size(-1)), 
             labels.view(-1)
-        )
+        ).mean()
         
         mask = (labels != -100)
         # reverse
