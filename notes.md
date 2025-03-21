@@ -39,3 +39,4 @@ can also save/load with latest pytorch https://huggingface.co/TinyLlama/TinyLlam
 
 * GPU memory usage still at ~36GB when resuming from checkpoint, not sure if this is due to batch size or perhaps there was some part in config I forgot to change.
 <!-- * `snapshot_download` in `download_model.py` didn't seem to download the repo with checkpoint data, only a `pytorch_model.bin`. Not sure why. Ended up just cloning the hf repo instead. -->
+* up to checkpoint 1080, best model was still 900. Killed early and decided to use this.
