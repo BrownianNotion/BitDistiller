@@ -8,5 +8,12 @@ loss: 0.00115966796875
 loss: 0.00029754638671875
 #### Runtime
 * clipping ~40 min
-* data gen 
-* training 
+* data gen ~35 min 
+* training ~5h 40min (estimate based on halfway) 
+
+### Train notes
+```
+du -sh BitDistiller/train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-200
+```
+checkpoint size: 101G
+GPU memory usage hovering 60/80GB
