@@ -66,3 +66,4 @@ coverage.xml
 cover/
 
 BitDistillerVenv/
+VllmVenv/
