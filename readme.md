@@ -75,20 +75,20 @@ With all steps, change the output paths (eg. for clipped weights, checkpoints) t
 the name of your experiment.
 
 ### Clipping
-Clips/quantises the teacher model (eg. TinyLlama_v1.1 below) to get initial weights for quantised student model. **Shouldn't need to be rerun unless using a new teacher/quantisation method**. Initial weights stored in `--dump_clip` argument.
+Clips/quantises the teacher model (eg. Llama-2-7b-hf below) to get initial weights for quantised student model. **Shouldn't need to be rerun unless using a new teacher/quantisation method**. Initial weights stored in `--dump_clip` argument.
 ```
 cd quantization
 
-CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1/int2-g128.pt
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-2-7b-hf --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-2-7b-hf/int2-g128.pt
 ```
 
 ### Generate Teacher Data
-Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json`.
+Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json`.
 ```
 cd data/generation
 
-bash generate.sh ../../models/TinyLlama_v1.1 wikitext ../datasets/tinyllama_v1.1/ 16 3000
-bash generate.sh ../../models/TinyLlama_v1.1 alpaca ../datasets/tinyllama_v1.1/ 16 5000
+bash generate.sh ../../models/Llama-2-7b-hf wikitext ../datasets/Llama-2-7b-hf/ 16 3000
+bash generate.sh ../../models/Llama-2-7b-hf alpaca ../datasets/Llama-2-7b-hf/ 16 5000
 
 # change to path in .py
 python mix_data.py
@@ -112,7 +112,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/int2-g128/ ./ckpts/tinyllama_v1.1/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json ./ckpts/Llama-2-7b-hf/int2-g128/ ./ckpts/Llama-2-7b-hf/int2-g128/runs/ 4
 ```
 
 ### Monitoring
@@ -123,7 +123,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=ckpts/tinyllama_v1.1/int2-g128/runs/ --port=8008
+tensorboard --logdir=ckpts/Llama-2-7b-hf/int2-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
@@ -157,7 +157,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
+python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --base-model Llama-2-7b-hf --quant_type int --extra_changes
 ```
 
 ## 5. Eval
@@ -167,7 +167,7 @@ python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --q
 To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
 ```
 cd test/general
-bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 int 2 
+bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
 ```
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
@@ -182,11 +182,11 @@ Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challen
 cd test/general
 
 # PPL
-python wiki_ppl.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+python wiki_ppl.py --model ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
 
 # QA
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks arc_easy,arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --eval_tasks arc_easy,arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
 
 # MMLU
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
 ```

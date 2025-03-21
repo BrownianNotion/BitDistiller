@@ -1,4 +1,4 @@
-export MODEL_PATH='../models/TinyLlama_v1.1/'
+export MODEL_PATH='../models/Llama-2-7b-hf/'
 export SAVE_PATH=$2
 export MASTER_ADDR="localhost"
 export MASTER_PORT="1321"
@@ -23,8 +23,8 @@ deepspeed --num_gpus=1 train.py \
     --load_best_model_at_end True \
     --save_strategy "steps" \
     --save_steps 40 \
-    --save_total_limit 2 \
-    --learning_rate 2e-5 \
+    --save_total_limit 3 \
+    --learning_rate 8e-6 \
     --lr_scheduler_type "constant" \
     --weight_decay 0. \
     --logging_steps 1 \
@@ -36,4 +36,4 @@ deepspeed --num_gpus=1 train.py \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt
+    --clip ../quantization/clip_cache/Llama-2-7b-hf/int2-g128.pt
