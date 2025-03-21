@@ -272,7 +272,7 @@ def train():
     n_gpus = torch.cuda.device_count()
     
     # Define the maximum memory per GPU for model loading
-    max_memory = f'36000MB'
+    max_memory = f'78000MB'
     max_memory = {i: max_memory for i in range(n_gpus)}
     device_map = "auto"
 
