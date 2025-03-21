@@ -32,4 +32,10 @@ hacked around it by adding weights_only=False in transformers library, but shoul
 
 can also save/load with latest pytorch https://huggingface.co/TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T/discussions/3
 
+* when resuming from checkpoint, specify total number of epochs including those already elapsed. eg. 4 epoch if you want to train 2 more epochs on a model already trained for 2 epochs.
+* when training from a checkpoint, changing train.sh won't matter, need to modify trainer_state.json (eg. for eval_steps). 
+
+* eval step ~2:20 on h100 sxm4, ~1hr (estimate) for 2 epochs on 24000 samples dataset.
+
+* GPU memory usage still at ~36GB when resuming from checkpoint, not sure if this is due to batch size or perhaps there was some part in config I forgot to change.
 <!-- * `snapshot_download` in `download_model.py` didn't seem to download the repo with checkpoint data, only a `pytorch_model.bin`. Not sure why. Ended up just cloning the hf repo instead. -->
