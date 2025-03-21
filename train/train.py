@@ -425,7 +425,7 @@ def train():
         )
     
     # Start training
-    trainer.train("../models/TinyLlama_v1.1_2bit_int_three_times_data")
+    trainer.train(resume_from_checkpoint="ckpts/TinyLlama_v1.1_2bit_int_three_times_data/checkpoint-600")
     
     # Save training state and final model
     trainer.save_state()
