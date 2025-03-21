@@ -90,6 +90,11 @@ cd data/generation
 bash generate.sh ../../models/Llama-2-7b-hf wikitext ../datasets/Llama-2-7b-hf/ 16 3000
 bash generate.sh ../../models/Llama-2-7b-hf alpaca ../datasets/Llama-2-7b-hf/ 16 5000
 
+# vllm
+python generate_vllm.py --base_model ../../models/Llama-2-7b-hf --dataset_name wikitext --out_path ./datasets/hf-llama-2-7b/ --max_sample 3000
+
+python generate_vllm.py --base_model ../../models/Llama-2-7b-hf --dataset_name alpaca --out_path ./datasets/hf-llama-2-7b/ --max_sample 5000
+
 # change to path in .py
 python mix_data.py
 ```
