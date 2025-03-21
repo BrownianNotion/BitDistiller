@@ -271,7 +271,7 @@ def train():
     n_gpus = torch.cuda.device_count()
     
     # Define the maximum memory per GPU for model loading
-    max_memory = f'36000MB'
+    max_memory = f'76000MB'
     max_memory = {i: max_memory for i in range(n_gpus)}
     device_map = "auto"
 
@@ -425,7 +425,7 @@ def train():
         )
     
     # Start training
-    trainer.train()
+    trainer.train("../models/TinyLlama_v1.1_2bit_int_three_times_data")
     
     # Save training state and final model
     trainer.save_state()
