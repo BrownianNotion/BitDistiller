@@ -178,7 +178,7 @@ Then run `upload_metrics.py` to automatically upload the metrics to hugging face
 user name.
 ```
 bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
-python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 metrics.json --model_id Llama-2-7b-hf_2bit_int
+python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_2bit_int
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
