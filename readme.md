@@ -162,7 +162,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --base-model Llama-2-7b-hf --quant_type int --extra_changes
+python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --base_model Llama-2-7b-hf --quant_type int
 ```
 
 ## 5. Eval
