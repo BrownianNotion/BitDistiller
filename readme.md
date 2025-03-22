@@ -181,8 +181,12 @@ user name.
 python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100/metrics.json --model_id 2-bit-baseline
 =======
 bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
+<<<<<<< HEAD
 python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 metrics.json --model_id Llama-2-7b-hf_2bit_int
 >>>>>>> 5b3ddcf (Add eval PPL to notes)
+=======
+python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_2bit_int
+>>>>>>> aae0ca7 (add further notes, fix typos to eval)
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 

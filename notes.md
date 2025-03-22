@@ -21,3 +21,4 @@ optimiser state is 75GB, can't be uploaded to hugging face as it exceeds max ind
 
 ### Eval Notes
 PPL 7.872644901275635, ~20s, very quick
+eval only 15 min very quick, maybe due to internet speed rather than gpu?
