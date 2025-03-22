@@ -75,25 +75,25 @@ With all steps, change the output paths (eg. for clipped weights, checkpoints) t
 the name of your experiment.
 
 ### Clipping
-Clips/quantises the teacher model (eg. Llama-2-7b-hf below) to get initial weights for quantised student model. **Shouldn't need to be rerun unless using a new teacher/quantisation method**. Initial weights stored in `--dump_clip` argument.
+Clips/quantises the teacher model (eg. Llama-3.2-3B below) to get initial weights for quantised student model. **Shouldn't need to be rerun unless using a new teacher/quantisation method**. Initial weights stored in `--dump_clip` argument.
 ```
 cd quantization
 
-CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-2-7b-hf --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-2-7b-hf/int2-g128.pt
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-3.2-3B --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-3.2-3B/int2-g128.pt
 ```
 
 ### Generate Teacher Data
-Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json`.
+Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/Llama-3.2-3B/mix_wiki_alpaca_8000.json`.
 ```
 cd data/generation
 
-bash generate.sh ../../models/Llama-2-7b-hf wikitext ../datasets/Llama-2-7b-hf/ 16 3000
-bash generate.sh ../../models/Llama-2-7b-hf alpaca ../datasets/Llama-2-7b-hf/ 16 5000
+bash generate.sh ../../models/Llama-3.2-3B wikitext ../datasets/Llama-3.2-3B/ 16 3000
+bash generate.sh ../../models/Llama-3.2-3B alpaca ../datasets/Llama-3.2-3B/ 16 5000
 
 # vllm
-python generate_vllm.py --base_model ../../models/Llama-2-7b-hf --dataset_name wikitext --out_path ./datasets/hf-llama-2-7b/ --max_sample 3000
+python generate_vllm.py --base_model ../../models/Llama-3.2-3B --dataset_name wikitext --out_path ./datasets/Llama-3.2-3B/ --max_sample 3000
 
-python generate_vllm.py --base_model ../../models/Llama-2-7b-hf --dataset_name alpaca --out_path ./datasets/hf-llama-2-7b/ --max_sample 5000
+python generate_vllm.py --base_model ../../models/Llama-3.2-3B --dataset_name alpaca --out_path ./datasets/Llama-3.2-3B/ --max_sample 5000
 
 # change to path in .py
 python mix_data.py
@@ -117,7 +117,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json ./ckpts/Llama-2-7b-hf/int2-g128/ ./ckpts/Llama-2-7b-hf/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-3.2-3B/mix_wiki_alpaca_8000.json ./ckpts/Llama-3.2-3B/int2-g128/ ./ckpts/Llama-3.2-3B/int2-g128/runs/ 4
 ```
 
 ### Monitoring
@@ -128,7 +128,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=ckpts/Llama-2-7b-hf/int2-g128/runs/ --port=8008
+tensorboard --logdir=ckpts/Llama-3.2-3B/int2-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
@@ -162,7 +162,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --base_model Llama-2-7b-hf --quant_type int
+python upload_model.py train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-400 2 --base_model Llama-3.2-3B --quant_type int
 ```
 
 ## 5. Eval
@@ -172,13 +172,13 @@ python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --ba
 To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
 ```
 cd test/general
-bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
+bash generate_metrics.sh ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-400 int 2 
 ```
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
-python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_2bit_int
+bash generate_metrics.sh ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-400 int 2 
+python upload_metrics.py --metrics_json ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-400/metrics.json --model_id Llama-3.2-3B_2bit_int
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
@@ -188,11 +188,11 @@ Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challen
 cd test/general
 
 # PPL
-python wiki_ppl.py --model ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+python wiki_ppl.py --model ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
 
 # QA
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --eval_tasks arc_easy,arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-12/ --eval_tasks arc_easy,arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
 
 # MMLU
-CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/Llama-3.2-3B/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
 ```
