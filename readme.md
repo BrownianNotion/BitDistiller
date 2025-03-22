@@ -75,6 +75,11 @@ With all steps, change the output paths (eg. for clipped weights, checkpoints) t
 the name of your experiment.
 
 ### Clipping
+Before clipping, make sure to run 
+'''
+pip install --upgrade transformers
+'''
+for Llama3 models to handle the rope_scaling configuration.
 Clips/quantises the teacher model (eg. Llama-3.2-3B below) to get initial weights for quantised student model. **Shouldn't need to be rerun unless using a new teacher/quantisation method**. Initial weights stored in `--dump_clip` argument.
 ```
 cd quantization

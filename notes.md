@@ -1,4 +1,12 @@
 ## Notes on run
+
+### Clipping
+Before clipping, make sure to run 
+'''
+pip install --upgrade transformers
+'''
+for Llama3 models to handle rope_scaling in config.json.
+
 ###
 * Clipping, example loss magnitude, a couple of orders higher than tinyllama 1.1B
 loss: 0.00147247314453125

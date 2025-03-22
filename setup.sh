@@ -12,5 +12,10 @@ python3.9 -m venv BitDistillerVenv
 source BitDistillerVenv/bin/activate
 pip install -r requirements.txt
 
+cp -r BitDistillerVenv VllmVenv
+source VllmVenv/bin/activate
+pip install vllm
+pip install nvidia-ml-py
+
 # download TinyLlama locally, since repo requires this to run
 python models/download_model.py
