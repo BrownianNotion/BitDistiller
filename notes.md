@@ -18,3 +18,6 @@ du -sh BitDistiller/train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-200
 checkpoint size: 101G
 GPU memory usage hovering 60/80GB
 optimiser state is 75GB, can't be uploaded to hugging face as it exceeds max individual size. If we need optimiser state, consider alternate solution, eg. is it possible to chunk the file
+
+### Eval Notes
+PPL 7.872644901275635, ~20s, very quick
