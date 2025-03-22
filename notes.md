@@ -9,7 +9,7 @@ loss: 0.00029754638671875
 #### Runtime
 * clipping ~40 min
 * data gen ~35 min 
-* training ~5h 40min (estimate based on halfway) 
+* training ~5h 40min
 
 ### Train notes
 ```
