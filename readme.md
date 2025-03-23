@@ -122,7 +122,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/Llama-3.2-3B/mix_wiki_alpaca_8000.json ./ckpts/Llama-3.2-3B/int2-g128/ ./ckpts/Llama-3.2-3B/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-3-3B/mix_wiki_alpaca_8000.json ./ckpts/Llama-3.2-3B/int2-g128/ ./ckpts/Llama-3.2-3B/int2-g128/runs/ 4
 ```
 
 ### Monitoring

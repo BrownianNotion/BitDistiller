@@ -1,4 +1,4 @@
-export MODEL_PATH='../models/Llama-2-7b-hf/'
+export MODEL_PATH='../models/Llama-3.2-3B/'
 export SAVE_PATH=$2
 export MASTER_ADDR="localhost"
 export MASTER_PORT="1321"
@@ -37,4 +37,4 @@ deepspeed --num_gpus=1 train.py \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/Llama-2-7b-hf/int2-g128.pt
+    --clip ../quantization/clip_cache/Llama-3-3.2/int2-g128.pt
