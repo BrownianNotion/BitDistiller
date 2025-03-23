@@ -38,4 +38,5 @@ deepspeed --num_gpus=1 train.py \
     --max_train_samples 999999 \
     --clip ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt \
     --torch_compile True \
-    --torch_compile_backend "inductor"
+    --torch_compile_backend "inductor" \
+    --optim "adamw_torch_fused" 
