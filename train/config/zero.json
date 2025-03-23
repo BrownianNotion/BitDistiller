@@ -36,6 +36,10 @@
         "contiguous_gradients": true
     },
 
+    "compile": {
+        "disable": false,
+        "backend": "inductor"
+    },
 
     "gradient_accumulation_steps": "auto",
     "gradient_clipping": "auto",
