@@ -47,7 +47,18 @@ in terminal. However, this then leads to an Out Of Memory error so batch size mu
 [2025-03-23 08:38:30,122] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 8176
 [2025-03-23 08:38:30,123] [ERROR] [launch.py:325:sigkill_handler]
 ```
+Add the argument 'num_items_in_batch' to KDTrainer. This leads to yet another Out Of Memory error, so decrease batch size to 4. Training now appears to complete, but get this error after final train step:
 
+```
+[rank0]:     return
+[rank0]:   File "/workspace/BitDistiller/BitDistillerVenv/lib/python3.9/site-packages/torch/serialization.py", line 784, in __exit__
+[rank0]:     self.file_like.write_end_of_file()
+[rank0]: RuntimeError: [enforce fail at inline_container.cc:626] . unexpected pos 12851034048 vs 12851033880
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3/3 [01:28<00:00, 29.56s/it]
+[rank0]:[W323 10:03:42.299538983 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[2025-03-23 10:03:55,561] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 4632
+[2025-03-23 10:03:55,562] [ERROR] [launch.py:325:sigkill_handler] ['/workspace/BitDistiller/BitDistillerVenv/bin/python3.9', '-u', 'train.py', '--local_rank=0', '--model_name_or_path', '../models/Llama-3.2-3B/', '--data_path', '../data/datasets/Llama-3.2-3B/mix_wiki_alpaca_64.json', '--model_max_length', '1024', '--output_dir', './ckpts/dry_run', '--logging_dir', './logs/dry_run/', '--num_train_epochs', '1', '--bf16', 'True', '--seed', '42', '--per_device_train_batch_size', '4', '--per_device_eval_batch_size', '4', '--gradient_accumulation_steps', '4', '--gradient_checkpointing', 'True', '--evaluation_strategy', 'steps', '--eval_steps', '4', '--load_best_model_at_end', 'True', '--save_strategy', 'steps', '--save_steps', '20', '--save_total_limit', '3', '--learning_rate', '2e-5', '--lr_scheduler_type', 'constant', '--weight_decay', '0.', '--logging_steps', '1', '--report_to', 'tensorboard', '--deepspeed', 'config/zero.json', '--bits', '2', '--quant_type', 'int2-asym', '--q_group_size', '128', '--train_kd', 'True', '--kd_loss_type', 'cakld', '--max_train_samples', '999999', '--clip', '../quantization/clip_cache/Llama-3.2-3B/int2-g128.pt'] exits with return code = 1
+```
 
 ```
 du -sh BitDistiller/train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-200
