@@ -410,7 +410,7 @@ def train():
     wandb.init(
         entity="DeepFriedNLP",
         project="SNLP_BitDistiller",
-        dir=training_args.checkpoint_path,
+        dir=training_args.output_dir,
         name=f"{datetime.datetime.now()}"
     )
 

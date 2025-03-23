@@ -28,7 +28,7 @@ deepspeed --num_gpus=1 train.py \
     --lr_scheduler_type "constant" \
     --weight_decay 0. \
     --logging_steps 1 \
-    --report_to "tensorboard","wandb" \
+    --report_to tensorboard wandb \
     --deepspeed config/zero.json \
     --bits 2 \
     --quant_type int2-asym \
