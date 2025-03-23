@@ -15,8 +15,8 @@ loss: 0.00125885009765625
 loss: 0.00115966796875
 loss: 0.00029754638671875
 #### Runtime
-* clipping ~40 min
-* data gen ~35 min 
+* clipping ~20 min
+* data gen ~20 min 
 * training ~5h 40min
 
 ### Train notes
@@ -60,6 +60,7 @@ Add the argument 'num_items_in_batch' to KDTrainer. This leads to yet another Ou
 [2025-03-23 10:03:55,562] [ERROR] [launch.py:325:sigkill_handler] ['/workspace/BitDistiller/BitDistillerVenv/bin/python3.9', '-u', 'train.py', '--local_rank=0', '--model_name_or_path', '../models/Llama-3.2-3B/', '--data_path', '../data/datasets/Llama-3.2-3B/mix_wiki_alpaca_64.json', '--model_max_length', '1024', '--output_dir', './ckpts/dry_run', '--logging_dir', './logs/dry_run/', '--num_train_epochs', '1', '--bf16', 'True', '--seed', '42', '--per_device_train_batch_size', '4', '--per_device_eval_batch_size', '4', '--gradient_accumulation_steps', '4', '--gradient_checkpointing', 'True', '--evaluation_strategy', 'steps', '--eval_steps', '4', '--load_best_model_at_end', 'True', '--save_strategy', 'steps', '--save_steps', '20', '--save_total_limit', '3', '--learning_rate', '2e-5', '--lr_scheduler_type', 'constant', '--weight_decay', '0.', '--logging_steps', '1', '--report_to', 'tensorboard', '--deepspeed', 'config/zero.json', '--bits', '2', '--quant_type', 'int2-asym', '--q_group_size', '128', '--train_kd', 'True', '--kd_loss_type', 'cakld', '--max_train_samples', '999999', '--clip', '../quantization/clip_cache/Llama-3.2-3B/int2-g128.pt'] exits with return code = 1
 ```
 
+#### Notes from BitDistiller Reproduction
 ```
 du -sh BitDistiller/train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-200
 ```
