@@ -19,7 +19,7 @@ deepspeed --num_gpus=1 train.py \
     --gradient_accumulation_steps 4 \
     --gradient_checkpointing True \
     --evaluation_strategy "steps" \
-    --eval_steps 40 \
+    --eval_steps 2 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
     --save_steps 40 \
@@ -36,6 +36,6 @@ deepspeed --num_gpus=1 train.py \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt
-    --torch_compile True
+    --clip ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt \
+    --torch_compile True \
     --torch_compile_backend "inductor"
