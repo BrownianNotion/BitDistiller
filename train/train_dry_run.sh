@@ -21,11 +21,11 @@ deepspeed --num_gpus=1 train.py \
     --gradient_accumulation_steps 4 \
     --gradient_checkpointing True \
     --evaluation_strategy "steps" \
-    --eval_steps 4 \
+    --eval_steps 1 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
-    --save_steps 20 \
-    --save_total_limit 3 \
+    --save_steps 1 \
+    --save_total_limit 1 \
     --learning_rate 2e-5 \
     --lr_scheduler_type "constant" \
     --weight_decay 0. \
@@ -37,5 +37,5 @@ deepspeed --num_gpus=1 train.py \
     --q_group_size 128 \
     --train_kd True \
     --kd_loss_type "cakld" \
-    --max_train_samples 999999 \
+    --max_train_samples 64 \
     --clip ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt

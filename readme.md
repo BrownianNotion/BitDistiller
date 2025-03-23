@@ -100,7 +100,7 @@ The model is by default trained on the dataset `mix_wiki_alpaca_8000.json`. Make
 ### Summary of steps
 1. Commit **all** changes made by your experiment to a branch for reproducibility. This includes changes to `train.sh` and other configs other than dry run. 
 2. Rerun clipping/data generation if needed (see [Pre-Training](#2-pre-training)).
-3. In `train/`, change `train_dry_run.sh` if needed and run `./dry_sun.sh` to check that your code works. This does a single step on a small dataset of 64 samples.
+3. In `train/`, change `train_dry_run.sh` if needed and run `./dry_run.sh` to check that your code works. This does a single step on a small dataset of 64 samples.
 4. (Skip if on vast.ai) If dry run succeeds, create a new tmux session:
 ```
 tmux new -s session_name

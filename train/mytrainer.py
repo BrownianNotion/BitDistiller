@@ -123,7 +123,7 @@ class KDTrainer(Trainer):
     def mse_loss(self, student_logits, teacher_logits):
         return mse_loss(student_logits, teacher_logits)
     
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         with torch.no_grad():
             teacher_outputs = self.teacher_model(
                 **inputs
