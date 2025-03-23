@@ -4,7 +4,6 @@ export MASTER_ADDR="localhost"
 export MASTER_PORT="1321"
 export GLOO_SOCKET_IFNAME="lo"
 export NCCL_SOCKET_IFNAME="lo"
-export WANDB_DISABLED=true  
 
 deepspeed --num_gpus=1 train.py \
     --model_name_or_path $MODEL_PATH \
@@ -29,7 +28,7 @@ deepspeed --num_gpus=1 train.py \
     --lr_scheduler_type "constant" \
     --weight_decay 0. \
     --logging_steps 1 \
-    --report_to "tensorboard" \
+    --report_to "tensorboard","wandb" \
     --deepspeed config/zero.json \
     --bits 2 \
     --quant_type int2-asym \

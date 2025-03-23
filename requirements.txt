@@ -26,5 +26,6 @@ fraction
 
 ipykernel
 importlib_metadata # missing library
+wandb
 
 # vllm # for fast teacher generation
