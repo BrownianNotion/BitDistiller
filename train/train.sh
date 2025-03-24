@@ -37,4 +37,4 @@ deepspeed --num_gpus=1 train.py \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/Llama-3-3.2/int2-g128.pt
+    --clip ../quantization/clip_cache/Llama-3.2-3B/int2-g128.pt
