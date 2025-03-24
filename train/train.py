@@ -415,7 +415,8 @@ def train():
         tags=[
             f"{training_args.bits}bit", 
             f"quant_type: {training_args.quant_type}",
-            f"student_model: {model_args.model_name_or_path}"
+            f"student_model: {model_args.model_name_or_path}",
+            f"teacher_model: {model_args.model_name_or_path}"   # TODO: make this teacher when Victor merges in teacher support
             ]
     )
 
