@@ -411,7 +411,12 @@ def train():
         entity="DeepFriedNLP",
         project="SNLP_BitDistiller",
         dir=training_args.output_dir,
-        name=f"{datetime.datetime.now()}"
+        name=f"{model_args.name_or_path}_{training_args.bits}_{training_args.quant_type}_{datetime.datetime.now()}",
+        tags=[
+            f"{training_args.bits}bit", 
+            f"quant_type: {training_args.quant_type}",
+            f"student_model: {model_args.model_name_or_path}"
+            ]
     )
 
     if training_args.train_kd:
