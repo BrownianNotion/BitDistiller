@@ -15,10 +15,10 @@ title: ""
 This should contain the loss curves from tensorboard and a summary table of the metrics -->
 [Hugging Face page]() 
 
+**Wandb run name:**  <!-- eg. TinyLlama_v1.1_2_int2-asym_2025-03-24 16:28:13.364267 -->
+
 <!-- Summarise and interpret your results -->
 
 ## References
-
-**Commit Hash:** <!-- eg. 079ae27. Use the last commit at the time of training. -->
 
 **Reviewer:** <!--  eg. @BrownianNotion -->
