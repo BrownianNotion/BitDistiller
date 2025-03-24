@@ -406,20 +406,24 @@ def train():
         mean_prob = mean_prob / dist.get_world_size()
         print(f"Get the coefficient: {mean_prob}")
 
-    # Initialize the Trainer with the appropriate settings
+    get_model_name = lambda path : os.path.basename(os.path.dirname(path))
+    student_name = get_model_name(model.config._name_or_path) 
+    teacher_name = get_model_name(teacher_model.config._name_or_path) 
+
     wandb.init(
         entity="DeepFriedNLP",
         project="SNLP_BitDistiller",
         dir=training_args.output_dir,
-        name=f"{model_args.name_or_path}_{training_args.bits}_{training_args.quant_type}_{datetime.datetime.now()}",
+        name=f"{student_name}_{training_args.bits}_{training_args.quant_type}_{datetime.datetime.now()}",
         tags=[
             f"{training_args.bits}bit", 
             f"quant_type: {training_args.quant_type}",
-            f"student_model: {model_args.model_name_or_path}",
-            f"teacher_model: {model_args.model_name_or_path}"   # TODO: make this teacher when Victor merges in teacher support
+            f"student_model: {student_name}",
+            f"teacher_model: {teacher_name}"
             ]
     )
 
+    # Initialize the Trainer with the appropriate setting
     if training_args.train_kd:
         trainer = KDTrainer(
             model=model, 
