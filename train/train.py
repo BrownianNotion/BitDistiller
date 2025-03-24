@@ -26,6 +26,7 @@ import random
 from tqdm import tqdm
 
 import wandb
+import evaluate
 
 def _make_r_io_base(f, mode: str):
     if not isinstance(f, io.IOBase):
@@ -259,6 +260,10 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, dat
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
     return dict(train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=data_collator)
 
+def compute_metrics(eval_preds):
+    metric = evaluate.load("perplexity", module_type="metric")
+    logits, labels = eval_preds
+    return metric.compute(predictions=logits, references=labels) 
 
 def train():
     # Parse command-line arguments for model, data, and training configurations
@@ -432,6 +437,7 @@ def train():
             loss_type=training_args.kd_loss_type, 
             mean_prob=mean_prob, 
             args=training_args, 
+            compute_metrics=compute_metrics,
             **data_module
         )
     else:
@@ -439,6 +445,7 @@ def train():
             model=model, 
             tokenizer=tokenizer, 
             args=training_args, 
+            compute_metrics=compute_metrics,
             **data_module
         )
     
