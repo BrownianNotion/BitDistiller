@@ -15,11 +15,12 @@ deepspeed --num_gpus=1 train.py \
     --bf16 True \
     --seed 42 \
     --per_device_train_batch_size 16 \
-    --per_device_eval_batch_size 16 \
+    --per_device_eval_batch_size 8 \
     --gradient_accumulation_steps 4 \
     --gradient_checkpointing True \
     --evaluation_strategy "steps" \
-    --eval_steps 40 \
+    --eval_steps 1 \
+    --eval_accumulation_steps 16 \
     --load_best_model_at_end True \
     --save_strategy "steps" \
     --save_steps 40 \
