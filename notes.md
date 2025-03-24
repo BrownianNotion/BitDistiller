@@ -71,3 +71,15 @@ optimiser state is 75GB, can't be uploaded to hugging face as it exceeds max ind
 ### Eval Notes
 PPL 7.872644901275635, ~20s, very quick
 eval ~ 22 min
+
+
+The attention layers in this model are transitioning from computing the RoPE embeddings internally through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed `position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be removed and
+
+ppl: 
+16.89498519897461
+
+{'arc_easy': {'acc': 0.5643939393939394, 'acc_stderr': 0.010174341733665226, 'acc_norm': 0.5130471380471381, 'acc_norm_stderr': 0.010256289925058426}}
+
+{'results': {'arc_challenge': {'acc': 0.2738907849829352, 'acc_stderr': 0.013032004972989503, 'acc_norm': 0.2986348122866894, 'acc_norm_stderr': 0.01337407861506875}, 'hellaswag': {'acc': 0.39762995419239194, 'acc_stderr': 0.0048840797504338855, 'acc_norm': 0.5061740689105756, 'acc_norm_stderr': 0.004989400984722236}, 'piqa': {'acc': 0.6882480957562568, 'acc_stderr': 0.010807431424873675, 'acc_norm': 0.6969532100108814, 'acc_norm_stderr': 0.010722648689531513}, 'winogrande': {'acc': np.float64(0.5430149960536701), 'acc_stderr': 0.01400038676159829}}, 'versions': {'arc_challenge': 0, 'hellaswag': 0, 'piqa': 0, 'winogrande': 0}, 'config': {'model': None, 'model_args': None, 'num_fewshot': 0, 'batch_size': 2, 'batch_sizes': [], 'device': None, 'no_cache': True, 'limit': None, 'bootstrap_iters': 100000, 'description_dict': None}}
+QA Avg: 0.47569595774631346
+{'arc_challenge': {'acc': 0.2738907849829352, 'acc_stderr': 0.013032004972989503, 'acc_norm': 0.2986348122866894, 'acc_norm_stderr': 0.01337407861506875}, 'hellaswag': {'acc': 0.39762995419239194, 'acc_stderr': 0.0048840797504338855, 'acc_norm': 0.5061740689105756, 'acc_norm_stderr': 0.004989400984722236}, 'piqa': {'acc': 0.6882480957562568, 'acc_stderr': 0.010807431424873675, 'acc_norm': 0.6969532100108814, 'acc_norm_stderr': 0.010722648689531513}, 'winogrande': {'acc': np.float64(0.5430149960536701), 'acc_stderr': 0.01400038676159829}}
