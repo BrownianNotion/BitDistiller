@@ -5,15 +5,56 @@ import argparse
 import os
 
 
-def plot_histogram(data, title, save_path):
-    # plt.figure(figsize=(8, 5))
-    plt.hist(data, bins=100, alpha=0.7, log=True, edgecolor="white")
+def plot_overlaid_histograms(data1, data2, title, save_dir):
+    os.makedirs(save_dir, exist_ok=True)
+
+    plt.figure(figsize=(8, 5))
+    plt.hist(data1, bins=100, alpha=0.6, label="Quantized", color="blue", edgecolor="white", log=True)
+    plt.hist(data2, bins=100, alpha=0.6, label="Original", color="orange", edgecolor="white", log=True)
     plt.title(title)
     plt.xlabel("Weight Values")
-    plt.ylabel("Count")
+    plt.ylabel("Log Count")
+    plt.legend()
     plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, f"{title}.png")) 
+    plt.close()
+
+
+
+def plot_histogram(data, title, save_path, max_points=1_000_000):
+    data = data.flatten()
+    if isinstance(data, torch.Tensor):
+        data = data.detach().cpu().numpy()
+    elif isinstance(data, list):
+        data = np.array(data)
+
+    if len(data) > max_points:
+        idx = np.random.choice(len(data), size=max_points, replace=False)
+        data = data[idx]
+
+    hist, bins = np.histogram(data, bins=100)
+    centers = (bins[:-1] + bins[1:]) / 2
+
+    plt.figure(figsize=(8, 5))
+    plt.bar(centers, hist, width=(bins[1] - bins[0]), alpha=0.7, edgecolor="white", log=True)
+    plt.title(title)
+    plt.xlabel("Weight Values")
+    plt.ylabel("Log Count")
+    plt.grid(True)
+    plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
+
+# def plot_histogram(data, title, save_path):
+#     # plt.figure(figsize=(8, 5))
+#     plt.hist(data, bins=100, alpha=0.7, log=True, edgecolor="white")
+#     plt.title(title)
+#     plt.xlabel("Weight Values")
+#     plt.ylabel("Count")
+#     plt.grid(True)
+#     plt.savefig(save_path)
+#     plt.close()
 
 
 def main():

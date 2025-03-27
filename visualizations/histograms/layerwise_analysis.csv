@@ -1,0 +1,1 @@
+layer,entropy_model1,entropy_model2,delta_entropy,frobenius_norm_diff,svd_model1,svd_model2,delta_svd
