@@ -84,7 +84,7 @@ Clips/quantises the teacher model (eg. Llama-3.2-3B below) to get initial weight
 ```
 cd quantization
 
-CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-3.2-3B --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-3.2-3B/int2-g128.pt
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-3.2-3B --calib_dataset pile --quant_type int --w_bit 3 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-3.2-3B/int3-g128.pt
 ```
 
 ### Generate Teacher Data
@@ -133,7 +133,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=ckpts/Llama-3.2-3B/int2-g128/runs/ --port=8008
+tensorboard --logdir=ckpts/Llama-3.2-3B/int3-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.

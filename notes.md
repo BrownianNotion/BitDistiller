@@ -2,18 +2,19 @@
 
 ### Clipping
 Before clipping, make sure to run 
-'''
+```
 pip install --upgrade transformers
-'''
+```
 for Llama3 models to handle rope_scaling in config.json.
 
 ###
 * Clipping, example loss magnitude, a couple of orders higher than tinyllama 1.1B
-loss: 0.00147247314453125
-loss: 0.00012493133544921875
-loss: 0.00125885009765625
-loss: 0.00115966796875
-loss: 0.00029754638671875
+Running Asymmetric Clipping...:  11%|██████████▊                                                                                          | 3/28 [01:56<16:12, 38.89s/it]
+loss: 0.0001239776611328125
+loss: 2.3990869522094727e-06
+loss: 0.00014591217041015625
+loss: 9.918212890625e-05
+loss: 2.5779008865356445e-06
 #### Runtime
 * clipping ~20 min
 * data gen ~20 min 
@@ -76,10 +77,8 @@ eval ~ 22 min
 The attention layers in this model are transitioning from computing the RoPE embeddings internally through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed `position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be removed and
 
 ppl: 
-16.89498519897461
+11.584750175476074
 
-{'arc_easy': {'acc': 0.5643939393939394, 'acc_stderr': 0.010174341733665226, 'acc_norm': 0.5130471380471381, 'acc_norm_stderr': 0.010256289925058426}}
 
-{'results': {'arc_challenge': {'acc': 0.2738907849829352, 'acc_stderr': 0.013032004972989503, 'acc_norm': 0.2986348122866894, 'acc_norm_stderr': 0.01337407861506875}, 'hellaswag': {'acc': 0.39762995419239194, 'acc_stderr': 0.0048840797504338855, 'acc_norm': 0.5061740689105756, 'acc_norm_stderr': 0.004989400984722236}, 'piqa': {'acc': 0.6882480957562568, 'acc_stderr': 0.010807431424873675, 'acc_norm': 0.6969532100108814, 'acc_norm_stderr': 0.010722648689531513}, 'winogrande': {'acc': np.float64(0.5430149960536701), 'acc_stderr': 0.01400038676159829}}, 'versions': {'arc_challenge': 0, 'hellaswag': 0, 'piqa': 0, 'winogrande': 0}, 'config': {'model': None, 'model_args': None, 'num_fewshot': 0, 'batch_size': 2, 'batch_sizes': [], 'device': None, 'no_cache': True, 'limit': None, 'bootstrap_iters': 100000, 'description_dict': None}}
-QA Avg: 0.47569595774631346
-{'arc_challenge': {'acc': 0.2738907849829352, 'acc_stderr': 0.013032004972989503, 'acc_norm': 0.2986348122866894, 'acc_norm_stderr': 0.01337407861506875}, 'hellaswag': {'acc': 0.39762995419239194, 'acc_stderr': 0.0048840797504338855, 'acc_norm': 0.5061740689105756, 'acc_norm_stderr': 0.004989400984722236}, 'piqa': {'acc': 0.6882480957562568, 'acc_stderr': 0.010807431424873675, 'acc_norm': 0.6969532100108814, 'acc_norm_stderr': 0.010722648689531513}, 'winogrande': {'acc': np.float64(0.5430149960536701), 'acc_stderr': 0.01400038676159829}}
+QA Avg: 0.5908171199783034
+{'results': {'arc_challenge': {'acc': 0.36689419795221845, 'acc_stderr': 0.014084133118104292, 'acc_norm': 0.40187713310580203, 'acc_norm_stderr': 0.014327268614578274}, 'arc_easy': {'acc': 0.6923400673400674, 'acc_stderr': 0.009470292575831181, 'acc_norm': 0.6792929292929293, 'acc_norm_stderr': 0.009577474571108831}, 'hellaswag': {'acc': 0.4945230033857797, 'acc_stderr': 0.004989482040610108, 'acc_norm': 0.6565425214100776, 'acc_norm_stderr': 0.004738920624724477}, 'piqa': {'acc': 0.749183895538629, 'acc_stderr': 0.010113869547069044, 'acc_norm': 0.7600652883569097, 'acc_norm_stderr': 0.009963625892809545}, 'winogrande': {'acc': np.float64(0.6511444356748224), 'acc_stderr': 0.013395059320137325}}, 'versions': {'arc_challenge': 0, 'arc_easy': 0, 'hellaswag': 0, 'piqa': 0, 'winogrande': 0}, 'config': {'model': None, 'model_args': None, 'num_fewshot': 0, 'batch_size': 2, 'batch_sizes': [], 'device': None, 'no_cache': True, 'limit': None, 'bootstrap_iters': 100000, 'description_dict': None}}
