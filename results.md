@@ -14,7 +14,7 @@ https://huggingface.co/VictorFiz
 
 # Tiny Llama Model Results: 
 
-### TinyLlama 3bit
+### 3bit
 
 https://huggingface.co/fredericowieser/TinyLlama_v1.1_3bit_int_3_bit_int
 
@@ -22,33 +22,23 @@ https://huggingface.co/fredericowieser/TinyLlama_v1.1_3bit_int_3_bit_int
 |-------|------------------|-------------------|------------------|------------------|------------------|------|--------|
 | 11.99 | 41.96 ± 1.01     | 24.32 ± 1.25      | 66.21 ± 1.10     | 50.28 ± 1.41     | 39.00 ± 0.49     | -    | 44.35  |
 
-## TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline
+## 2bit
 
 https://huggingface.co/BrownianNotion/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline
 
 
-| Metric                                | Dataset       | Split        | Source        | Value  |
-|---------------------------------------|---------------|--------------|---------------|--------|
-| Accuracy                              | ARC-Challenge | Test Set     | Self-reported | 0.215  |
-| Normalized Accuracy                   | ARC-Challenge | Test Set     | Self-reported | 0.246  |
-| Accuracy                              | HellaSwag     | Test Set     | Self-reported | 0.324  |
-| Normalized Accuracy                   | HellaSwag     | Test Set     | Self-reported | 0.373  |
-| Accuracy                              | PIQA          | Validation   | Self-reported | 0.608  |
-| Normalized Accuracy                   | PIQA          | Validation   | Self-reported | 0.607  |
-| Accuracy                              | Winogrande    | Test Set     | Self-reported | 0.520  |
-| QA Average                            | QA-Avg        | -            | Self-reported | 0.417  |
-| Perplexity                            | WikiText-2    | Test Set     | Self-reported | 22.655 |
+| PPL | arc_easy | arc_challenge | piqa | winogrande | hellaswag | mmlu | QA Avg |
+|------|------------------|-------------------|------------------|------------------|------------------|------|--------|
+|  -  | - | 21.50 | 60.80 | 52.00 | 32.40 | - | 41.70 |
 
-
-
-## TinyLlama_v1.1_mix_wikitext_alpaca_1bit_BitDistiller_baseline
+## 1bit 
 
 https://huggingface.co/fredericowieser/TinyLlama_v1.1_mix_wikitext_alpaca_1bit_BitDistiller_baseline
 
 
 | PPL  | arc_easy        | arc_challenge     | piqa           | winogrande      | hellaswag       | mmlu | QA Avg |
 |------|------------------|-------------------|------------------|------------------|------------------|------|--------|
-| n/a | n/a              | 24.7              | 52.8            | 51.2                |    25.7      | -    | 37.8  |
+| - | -              | 24.70              | 52.80            | 51.20                |    25.70      | -    | 37.80  |
 
 
 ---
@@ -106,17 +96,9 @@ https://huggingface.co/BrownianNotion/Llama-2-7b-hf_2bit_int
 https://huggingface.co/acoleman/Llama-3.2-3B_2bit_int
 
 
-PPL: 16.895
-
-| Dataset        | Accuracy | Accuracy StdErr | Normalized Accuracy | Normalized Accuracy StdErr |
-|----------------|----------|------------------|----------------------|-----------------------------|
-| ARC Easy       | 0.5644   | ± 0.0102         | 0.5130               | ± 0.0103                    |
-| ARC Challenge  | 0.2739   | ± 0.0130         | 0.2986               | ± 0.0134                    |
-| HellaSwag      | 0.3976   | ± 0.0049         | 0.5062               | ± 0.0050                    |
-| PIQA           | 0.6882   | ± 0.0108         | 0.6970               | ± 0.0107                    |
-| Winogrande     | 0.5430   | ± 0.0140         | N/A                  | N/A                         |
-
-QA avg: 0.4757
+| PPL | arc_easy | arc_challenge | piqa | winogrande | hellaswag | mmlu | QA Avg |
+|------|------------------|-------------------|------------------|------------------|------------------|------|--------|
+| 16.895 | 56.44 ± 1.02 | 27.39 ± 1.30 | 68.82 ± 1.08 | 54.30 ± 1.40 | 39.76 ± 0.49 | - | 47.57 |
 
 ---
 
@@ -124,21 +106,20 @@ QA avg: 0.4757
 
 https://huggingface.co/acoleman/Llama-3.2-3B_3bit_int
 
-PPL: 11.585
-
-| Dataset        | Accuracy | Accuracy StdErr | Normalized Accuracy | Normalized Accuracy StdErr |
-|----------------|----------|------------------|----------------------|-----------------------------|
-| ARC Challenge  | 0.3669   | ± 0.0141         | 0.4019               | ± 0.0143                    |
-| ARC Easy       | 0.6923   | ± 0.0095         | 0.6793               | ± 0.0096                    |
-| HellaSwag      | 0.4945   | ± 0.0050         | 0.6565               | ± 0.0047                    |
-| PIQA           | 0.7492   | ± 0.0101         | 0.7601               | ± 0.0100                    |
-| Winogrande     | 0.6511   | ± 0.0134         | N/A                  | N/A                         |
-
-QA avg: 0.5908
+| PPL | arc_easy | arc_challenge | piqa | winogrande | hellaswag | mmlu | QA Avg |
+|------|------------------|-------------------|------------------|------------------|------------------|------|--------|
+| 11.585 | 69.23 ± 0.95 | 36.69 ± 1.41 | 74.92 ± 1.01 | 65.11 ± 1.34 | 49.45 ± 0.50 | - | 59.08 |
 
 
 # Ablations: 
 
+## Different Loss function
+### TinyLlama_v1.1_2bit_int_ce_plus_cakld_20
+https://huggingface.co/Niks898/TinyLlama_v1.1_2bit_int_ce_plus_cakld_20
+
+|     PPL      |  arc_easy  |arc_challenge|    piqa    | winogrande | hellaswag  |mmlu|QA Avg|
+|--------------|------------|-------------|------------|------------|------------|----|-----:|
+|2242.81 |35.40 ± 0.98|21.67 ± 1.20 |60.55 ± 1.14|51.93 ± 1.40|32.22 ± 0.47|-   | 40.36|
 
 ### Impact of Group Size on Performance
 
@@ -148,7 +129,7 @@ https://huggingface.co/BrownianNotion/tinyllama_v1.1-int1-g128
 
 | Group Size | PPL     | ARC-Challenge | ARC-Easy | PIQA   | Winogrande | QA Avg |
 |------------|---------|----------------|----------|--------|-------------|--------|
-| 128        | 3488.38 | 21.25%         | 26.56%   | 52.77% | 49.96%      | 37.63% |
-| 64         | 2707.56 | 20.56%         | 25.76%   | 53.05% | 49.57%      | 37.23% |
-| 32         | 2720.33 | 22.10%         | 24.75%   | 53.26% | 51.07%      | 37.79% |
+| 128        | 3488.38 | 21.25         | 26.56   | 52.77 | 49.96      | 37.63 |
+| 64         | 2707.56 | 20.56         | 25.76   | 53.05 | 49.57      | 37.23 |
+| 32         | 2720.33 | 22.10         | 24.75   | 53.26 | 51.07      | 37.79 |
 
