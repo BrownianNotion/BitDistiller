@@ -22,6 +22,13 @@ https://huggingface.co/fredericowieser/TinyLlama_v1.1_3bit_int_3_bit_int
 |-------|------------------|-------------------|------------------|------------------|------------------|------|--------|
 | 11.99 | 41.96 ± 1.01     | 24.32 ± 1.25      | 66.21 ± 1.10     | 50.28 ± 1.41     | 39.00 ± 0.49     | -    | 44.35  |
 
+### 3bit nf3 quantisation
+https://huggingface.co/fredericowieser/TinyLlama_v1.1_3bit_nf3
+
+| PPL |  arc_easy  |arc_challenge|    piqa    | winogrande | hellaswag  |mmlu|QA Avg|
+|----:|------------|-------------|------------|------------|------------|----|-----:|
+|11.52|43.60 ± 1.02|23.46 ± 1.24 |66.38 ± 1.10|52.01 ± 1.40|38.80 ± 0.49|-   | 44.85|
+
 ## 2bit
 
 https://huggingface.co/BrownianNotion/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline
