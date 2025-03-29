@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 from safetensors.torch import load_file as load_safetensors
 from huggingface_hub import snapshot_download
 from scipy.stats import entropy
+from transformers import AutoModelForCausalLM
 from weight_distribution import plot_histogram, plot_overlaid_histograms
 import csv
+import re
 
 def compute_entropy(weights):
     flat = weights.detach().cpu().to(torch.float32).numpy().flatten()
@@ -25,26 +27,40 @@ def compute_svd_spectrum(weights, device):
         return s.cpu().numpy()
     return None
 
+
 def load_model_weights(model_dir):
-    weight_files = [f for f in os.listdir(model_dir)
-                    if f.endswith(('.safetensors', '.pt')) and 'model' in f]
-    state_dict = {}
-    for f in weight_files:
-        path = os.path.join(model_dir, f)
-        if f.endswith(".safetensors"):
-            state_dict.update(load_safetensors(path))
-        elif f.endswith(".pt"):
-            state_dict.update(torch.load(path, map_location="cpu"))
-    return state_dict
+    try:
+        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.float32, low_cpu_mem_usage=True)
+        return model.state_dict()
+    except Exception as e:
+        print("Failed to load model from Hugging Face Transformers:", e)
+        return {}
+
+# def load_model_weights(model_dir):
+#     weight_files = [f for f in os.listdir(model_dir)
+#                     if f.endswith(('.safetensors', '.pt')) and 'model' in f]
+#     state_dict = {}
+#     for f in weight_files:
+#         path = os.path.join(model_dir, f)
+#         if f.endswith(".safetensors"):
+#             state_dict.update(load_safetensors(path))
+#         elif f.endswith(".pt"):
+#             state_dict.update(torch.load(path, map_location="cpu"))
+#     return state_dict
 
 IMPORTANT_LAYERS = ["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj"]
+
+
+def extract_block_number(key):
+    match = re.search(r'layers\.(\d+)', key)
+    return int(match.group(1)) if match else -1
 
 def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", last_n=None):
     selected_layers = layers if layers else IMPORTANT_LAYERS
     results = []
 
     matching_keys = [name for name in model1_dict.keys() if any(layer in name for layer in selected_layers)]
-    matching_keys.sort()
+    matching_keys.sort(key=extract_block_number)
 
     if last_n is not None and last_n > 0:
         matching_keys = matching_keys[-last_n:]
@@ -150,4 +166,5 @@ def main():
     print(f"Saved CSV summary to {csv_path}")
 
 if __name__ == '__main__':
+    #python weight_analysis.py --model_id Heisenger/Llama-2-7b-hf_1bit_int --compare_id meta-llama/Llama-2-7b-hf --last_n 10
     main()
