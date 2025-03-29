@@ -1,0 +1,156 @@
+# NOTES FOR TRAINING 1BIT BASE MODEL
+
+# Clipping
+
+cd quantization
+
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 --calib_dataset pile --quant_type int --w_bit 1 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1/int1-g128.pt
+
+# Training
+
+cd ../train
+
+tensorboard --logdir==logs/tiny_llama_v1.1 --port=8008
+
+
+bash train_1bit.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tiny_llama_v1.1/int1-g128/ ./logs/tiny_llama_v1.1/int1-g128/ 4
+
+# Logs From Clipping
+
+(BitDistillerVenv) ubuntu@104-171-203-244:~/BitDistiller/quantization$ CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/TinyLlama_v1.1 --calib_dataset pile --quant_type int --w_bit 1 --q_group_size 128 --run_clip --dump_clip ./clip_cache/TinyLlama_v1.1/int1-g128.pt
+Quantization config: {'zero_point': True, 'q_group_size': 128, 'quant_type': 'int'}
+* Building model ../models/TinyLlama_v1.1
+Using pile dataset to do calibation
+README.md: 100%|██████████████████████████████████████████████████████████████| 167/167 [00:00<00:00, 13.0kB/s]
+Repo card metadata block was not found. Setting CardData to empty.
+val.jsonl.zst: 100%|█████████████████████████████████████████████████████████| 471M/471M [00:02<00:00, 186MB/s]
+Generating validation split: 100%|███████████████████████████| 214670/214670 [00:17<00:00, 12001.49 examples/s]
+Map: 100%|███████████████████████████████████████████████████| 214670/214670 [00:12<00:00, 16623.36 examples/s]
+ * Split into 32 blocks
+Running Asymmetric Clipping...:   0%|                                                   | 0/22 [00:00<?, ?it/s]loss: 1.5974044799804688e-05
+loss: 1.6689300537109375e-06
+loss: 0.000213623046875
+loss: 0.00017452239990234375
+loss: 1.9669532775878906e-05
+Running Asymmetric Clipping...:   5%|█▉                                         | 1/22 [00:20<07:15, 20.73s/it]loss: 0.00011110305786132812
+loss: 8.046627044677734e-06
+loss: 0.0003986358642578125
+loss: 0.0003509521484375
+loss: 0.000308990478515625
+Running Asymmetric Clipping...:   9%|███▉                                       | 2/22 [00:41<06:50, 20.51s/it]loss: 0.000606536865234375
+loss: 2.5033950805664062e-06
+loss: 0.00055694580078125
+loss: 0.0005035400390625
+loss: 2.294778823852539e-06
+Running Asymmetric Clipping...:  14%|█████▊                                     | 3/22 [01:01<06:28, 20.44s/it]loss: 0.000629425048828125
+loss: 3.814697265625e-06
+loss: 0.00075531005859375
+loss: 0.000598907470703125
+loss: 3.0994415283203125e-06
+Running Asymmetric Clipping...:  18%|███████▊                                   | 4/22 [01:21<06:07, 20.42s/it]loss: 0.000885009765625
+loss: 4.649162292480469e-06
+loss: 0.000919342041015625
+loss: 0.00075531005859375
+loss: 4.708766937255859e-06
+Running Asymmetric Clipping...:  23%|█████████▊                                 | 5/22 [01:42<05:47, 20.41s/it]loss: 0.000911712646484375
+loss: 6.735324859619141e-06
+loss: 0.001129150390625
+loss: 0.00092315673828125
+loss: 6.765127182006836e-06
+Running Asymmetric Clipping...:  27%|███████████▋                               | 6/22 [02:02<05:26, 20.38s/it]loss: 0.0009307861328125
+loss: 8.225440979003906e-06
+loss: 0.00136566162109375
+loss: 0.0010833740234375
+loss: 3.9577484130859375e-05
+Running Asymmetric Clipping...:  32%|█████████████▋                             | 7/22 [02:22<05:05, 20.39s/it]loss: 0.000858306884765625
+loss: 0.00021457672119140625
+loss: 0.0016937255859375
+loss: 0.00122833251953125
+loss: 0.002349853515625
+Running Asymmetric Clipping...:  36%|███████████████▋                           | 8/22 [02:43<04:45, 20.42s/it]loss: 0.00110626220703125
+loss: 3.552436828613281e-05
+loss: 0.001708984375
+loss: 0.00142669677734375
+loss: 1.71661376953125e-05
+Running Asymmetric Clipping...:  41%|█████████████████▌                         | 9/22 [03:03<04:25, 20.43s/it]loss: 0.001068115234375
+loss: 5.4836273193359375e-05
+loss: 0.00183868408203125
+loss: 0.0015411376953125
+loss: 1.9550323486328125e-05
+Running Asymmetric Clipping...:  45%|███████████████████                       | 10/22 [03:24<04:05, 20.43s/it]loss: 0.00157928466796875
+loss: 6.341934204101562e-05
+loss: 0.002471923828125
+loss: 0.0016937255859375
+loss: 3.1948089599609375e-05
+Running Asymmetric Clipping...:  50%|█████████████████████                     | 11/22 [03:44<03:44, 20.40s/it]loss: 0.0018768310546875
+loss: 7.152557373046875e-05
+loss: 0.0029754638671875
+loss: 0.0019073486328125
+loss: 3.4809112548828125e-05
+Running Asymmetric Clipping...:  55%|██████████████████████▉                   | 12/22 [04:05<03:24, 20.40s/it]loss: 0.0015716552734375
+loss: 9.202957153320312e-05
+loss: 0.0031585693359375
+loss: 0.0020599365234375
+loss: 4.458427429199219e-05
+Running Asymmetric Clipping...:  59%|████████████████████████▊                 | 13/22 [04:25<03:03, 20.41s/it]loss: 0.00150299072265625
+loss: 0.00013065338134765625
+loss: 0.003173828125
+loss: 0.002227783203125
+loss: 5.14984130859375e-05
+Running Asymmetric Clipping...:  64%|██████████████████████████▋               | 14/22 [04:45<02:43, 20.41s/it]loss: 0.0023040771484375
+loss: 0.00010967254638671875
+loss: 0.003997802734375
+loss: 0.0026092529296875
+loss: 8.106231689453125e-05
+Running Asymmetric Clipping...:  68%|████████████████████████████▋             | 15/22 [05:06<02:22, 20.41s/it]loss: 0.0030059814453125
+loss: 0.00013446807861328125
+loss: 0.004180908203125
+loss: 0.00299072265625
+loss: 0.00011587142944335938
+Running Asymmetric Clipping...:  73%|██████████████████████████████▌           | 16/22 [05:26<02:02, 20.41s/it]loss: 0.003204345703125
+loss: 0.00021648406982421875
+loss: 0.00531005859375
+loss: 0.0037078857421875
+loss: 0.00017070770263671875
+Running Asymmetric Clipping...:  77%|████████████████████████████████▍         | 17/22 [05:47<01:42, 20.42s/it]loss: 0.00396728515625
+loss: 0.0001964569091796875
+loss: 0.006561279296875
+loss: 0.004638671875
+loss: 0.0002651214599609375
+Running Asymmetric Clipping...:  82%|██████████████████████████████████▎       | 18/22 [06:07<01:21, 20.42s/it]loss: 0.00634765625
+loss: 0.0001811981201171875
+loss: 0.007354736328125
+loss: 0.005706787109375
+loss: 0.000339508056640625
+Running Asymmetric Clipping...:  86%|████████████████████████████████████▎     | 19/22 [06:28<01:01, 20.43s/it]loss: 0.004486083984375
+loss: 0.00037384033203125
+loss: 0.00836181640625
+loss: 0.006866455078125
+loss: 0.00057220458984375
+Running Asymmetric Clipping...:  91%|██████████████████████████████████████▏   | 20/22 [06:48<00:40, 20.44s/it]loss: 0.0205078125
+loss: 0.000751495361328125
+loss: 0.00921630859375
+loss: 0.007781982421875
+loss: 0.000865936279296875
+Running Asymmetric Clipping...:  95%|████████████████████████████████████████  | 21/22 [07:09<00:20, 20.46s/it]loss: 0.00958251953125
+loss: 0.0010833740234375
+loss: 0.01239013671875
+loss: 0.0084228515625
+loss: 0.0033111572265625
+Running Asymmetric Clipping...: 100%|██████████████████████████████████████████| 22/22 [07:29<00:00, 20.43s/it]
+Clipping results saved at ./clip_cache/TinyLlama_v1.1/int1-g128.pt
+
+# Eval results
+
+cd test/general
+
+python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int1-g128/checkpoint-400/ --quant_type int --bits 1 --group_size 128
+
+CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tiny_llama_v1.1/int1-g128/checkpoint-400/  --eval_tasks arc_challenge,winogrande,hellaswag,piqa --test_set --bits 1 --group_size 128 --quant_type int --num_fewshot 0 
+
+PPL: 2297.22607421875
+QA Avg: 0.37809
+Arc Overall: 0.21501
+Hella: 0.25682
+PIQA: 0.52829
+WINO: 0.51223

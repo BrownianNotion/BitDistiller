@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, LlamaTokenizer, AutoModelForCausalLM
 import sys
 sys.path.append("../")
 from test_utils import pseudo_quantize_model_weight
-
+import json
 
 def get_wikitext2(nsamples, seed, seqlen, model):
     from datasets import load_dataset
@@ -42,7 +42,7 @@ def get_wikitext2(nsamples, seed, seqlen, model):
     return traindataset, testenc
 
 @torch.no_grad()
-def llama_eval(model, testenc, dev, seqlen = 2048):
+def llama_eval(model, testenc, dev, seqlen = 2048, model_path=None):
     from tqdm import tqdm
     print('Evaluating ...')
 
@@ -123,6 +123,9 @@ def llama_eval(model, testenc, dev, seqlen = 2048):
     print('ppl: ')
     print(ppl.item())
     print()
+    
+    with open(f"{model_path}/metrics.json", "w+") as f:
+        json.dump({"PPL": ppl.item()}, f, indent=4)
 
     model.config.use_cache = use_cache
 
@@ -155,7 +158,7 @@ def main():
 
     dataloader, testloader = get_wikitext2(nsamples=128, seed=0, seqlen=2048, model=args.model)
 
-    llama_eval(model, testloader, dev)
+    llama_eval(model, testloader, dev, model_path=args.model)
 
 if __name__ == "__main__":
     import logging

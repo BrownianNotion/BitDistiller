@@ -5,7 +5,11 @@ import argparse
 import os
 import sys
 from clip_utils import *
-from quantizer import pseudo_quantize_tensor, pseudo_quantize_n2f3_tensor
+from quantizer import (
+    pseudo_quantize_tensor,
+    pseudo_quantize_tensor_1bit,
+    pseudo_quantize_n2f3_tensor,
+)
 from tqdm import tqdm
 from collections import defaultdict
 import functools
@@ -20,6 +24,7 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
     # w           [co, ci]      -> [co, 1, n_group, group size]
     # input_feat  [n_token, ci] -> [1, n_token, n_group, group size]
 
+    # Group weight and input feature tensor into chunks for quantization
     group_size = q_config["q_group_size"] if q_config["q_group_size"] > 0 else w.shape[1]
 
     input_feat = input_feat.view(-1, input_feat.shape[-1])
@@ -30,6 +35,8 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
     oc_batch_size = 256 if w.shape[0] % 256 == 0 else 64  # prevent OOM
     
     assert w.shape[0] % oc_batch_size == 0
+
+    # Initialize lists to store best min/max values per batch
     w_all = w
     best_max_val_all = []
     best_min_val_all = []
@@ -53,7 +60,10 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
                 # min_val = - max_val
                 cur_w = torch.clamp(w, min_val, max_val)
                 if q_config["quant_type"] == "int":
-                    q_w = pseudo_quantize_tensor(cur_w, n_bit=n_bit, zero_point=True, q_group_size=q_config['q_group_size'])
+                    if n_bit == 1:
+                        q_w = pseudo_quantize_tensor_1bit(cur_w, zero_point=True, q_group_size=q_config['q_group_size'])
+                    else:
+                        q_w = pseudo_quantize_tensor(cur_w, n_bit=n_bit, zero_point=True, q_group_size=q_config['q_group_size'])
                 elif q_config["quant_type"] == "nf3":
                     q_w = pseudo_quantize_n2f3_tensor(cur_w, q_group_size=q_config['q_group_size'])
                 else:

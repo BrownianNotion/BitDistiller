@@ -1,5 +1,6 @@
 # BitDistiller-Extensions
 Forked from the BitDistiller [paper](http://arxiv.org/abs/2402.10631) repo https://github.com/DD-DuDa/BitDistiller.git. Please cite the original repo if you find this work interesting.
+
 ```
 @misc{du2024bitdistiller,
       title={BitDistiller: Unleashing the Potential of Sub-4-Bit LLMs via Self-Distillation}, 
@@ -20,15 +21,16 @@ This is a student project with the goal being to explore unanswered questions fr
 1. [Setup](#1-setup)
 2. [Pre-Training](#2-pre-training)
 3. [Training workflow](#3-training-workflow)
-4. [Eval](#4-eval)
+4. [Uploading the Model](#4-uploading-the-model-to-hugging-face)
+5. [Eval](#5-eval)
 
 ## 0. Overall Workflow Summary
 0. Create new branch, clone repo on a cloud GPU instance. 
 1. Run [Setup](#1-setup)
 2. Run [Pre-Training](#2-pre-training) if applicable
 3. Run [Training](#3-training-workflow) 
-4. Run [Eval](#4-eval)
-5. [Upload model](#5-sharing-the-model) to hf with metrics.
+4. [Upload model](#4-uploading-the-model-to-hugging-face) to hugging face.
+5. Run [Eval](#5-eval) to generate metrics.
 6. **Delete instance!!**
 
 
@@ -98,7 +100,7 @@ The model is by default trained on the dataset `mix_wiki_alpaca_8000.json`. Make
 ### Summary of steps
 1. Commit **all** changes made by your experiment to a branch for reproducibility. This includes changes to `train.sh` and other configs other than dry run. 
 2. Rerun clipping/data generation if needed (see [Pre-Training](#2-pre-training)).
-3. In `train/`, change `train_dry_run.sh` if needed and run `./dry_sun.sh` to check that your code works. This does a single step on a small dataset of 64 samples.
+3. In `train/`, change `train_dry_run.sh` if needed and run `./dry_run.sh` to check that your code works. This does a single step on a small dataset of 64 samples.
 4. (Skip if on vast.ai) If dry run succeeds, create a new tmux session:
 ```
 tmux new -s session_name
@@ -121,7 +123,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=logs/tiny_llama_v1.1/int2-g128/ --port=8008
+tensorboard --logdir=ckpts/tinyllama_v1.1/int2-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
@@ -130,13 +132,56 @@ nvtop
 Signs your training has gone wrong (to be expanded):
 * The loss curve isn't going down after a few steps
 
-## 4. Eval
-Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run as follows:
+## 4. Uploading the model to hugging face 
+As eval takes time, begin uploading the model as soon as training has finished if the loss curves and validation metrics look good.
+
+### Logging into hugging face
+Login to hugging face with your access token (generate one if you don't have one) with
+```
+huggingface-cli login
+```
+Check your login succeeded with
+```
+huggingface-cli whoami
+```
+
+### Uploading the model
+Make sure your tensorboard logs (`.events.out.tfevents.{...}`) are inside your `<model_path>` folder (hugging face will auto-generate a [metrics tabs](https://huggingface.co/docs/hub/en/tensorboard) to display the loss curves). 
+
+Run `upload_model.py`, specifying args `<model_path>`, `<bits>` and optionally
+`--quant_type, --extra_changes, --base_model, --ovewrite`. Run `upload_model.py -h` for help on the options. For <model_path>, we want the best model checkpoint, which can be found in the `best_model_checkpoint` field of `trainer_state.json`.
+
+This uploads the model to the hugging face repo `your_username/model_name`. Model name follows the convention
+*"{base_model}\_{num}bit\_{quantisation method}(\_{extra changes})"*.
+
+**Example Usage**
+```
+python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
+```
+
+## 5. Eval
+### Summary
+**Make sure you're logged into hugging face first**, see [uploading the model](#4-uploading-the-model-to-hugging-face).
+
+To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
+```
+cd test/general
+bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 int 2 
+```
+Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
+user name.
+```
+python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100/metrics.json --model_id 2-bit-baseline
+```
+**Note**: this does not run MMLU by default as it is expensive. 
+
+### More information
+Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run individually as follows:
 ```
 cd test/general
 
 # PPL
-python wiki_ppl.py --model ../../train/ckpts/tiny_llama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
+python wiki_ppl.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --quant_type int --bits 2 --group_size 128
 
 # QA
 CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks arc_easy,arc_challenge,winogrande,hellaswag,piqa --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 0 
@@ -144,7 +189,3 @@ CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model ../../train/ckpts/tinyllama_v1
 # MMLU
 CUDA_VISIBLE_DEVICES=0 python llm_eval.py --model  ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-12/ --eval_tasks hendrycksTest-* --test_set --bits 2 --group_size 128 --quant_type int --num_fewshot 5
 ```
-
-## 5. Sharing the model
-Upload the model to hugging face and logs (which contain the files needed for the train/loss curves for tensorboard). This will help us easily share our work. This will be eventually automated, but for now do it manually and put in the metrics roughly according to this (there will be a yaml header on top of the `modelcard.md` where the metrics can be added).
-https://huggingface.co/BrownianNotion/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_BitDistiller_baseline
