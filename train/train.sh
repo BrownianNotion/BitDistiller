@@ -8,6 +8,7 @@ export WANDB_DISABLED=true
 
 deepspeed --num_gpus=1 train.py \
     --model_name_or_path $MODEL_PATH \
+    --teacher_model_path "meta-llama/Llama-2-7b-hf" \
     --data_path $1 \
     --model_max_length 1024 \
     --output_dir $SAVE_PATH \
