@@ -74,6 +74,12 @@ Note that for vast.ai, your repo will be under `/workspace/BitDistiller`.
 With all steps, change the output paths (eg. for clipped weights, checkpoints) to match
 the name of your experiment.
 
+Before any steps, since we are running the 3B model, we should run:
+'''
+pip install --upgrade transformers
+export TOKENIZERS_PARALLELISM=false
+'''
+
 ### Clipping
 Before clipping, make sure to run 
 '''
