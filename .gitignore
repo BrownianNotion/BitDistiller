@@ -2,6 +2,7 @@
 
 models/TinyLlama_v1.1/
 models/Llama-2-7b-hf/
+models/Llama-3.2-3B/
 
 test/gsm8k/preds/
 test/humaneval/preds/
