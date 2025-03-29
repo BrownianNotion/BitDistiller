@@ -183,6 +183,10 @@ python upload_metrics.py --metrics_json ../../train/ckpts/Llama-3.2-3B/int2-g128
 **Note**: this does not run MMLU by default as it is expensive. 
 
 ### More information
+In case of transformer module errors, try
+```
+pip install --force-reinstall transformers==4.46.2
+```
 Our main benchmarks will be perplexity (PPL), QA datasets (arc_easy, arc_challenge, winogrande, hellasawg, piqa) and MMLU. For consistency, do not change `num_fewshot`. These benchmarks can be run individually as follows:
 ```
 cd test/general
