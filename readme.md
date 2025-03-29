@@ -90,18 +90,7 @@ CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-3.2-3B --
 ### Generate Teacher Data
 Generate the data for (distillation) training. **Shouldn't need to be rerun unless using a new teacher**. The main file we will use for training is `data/datasets/Llama-3.2-3B/mix_wiki_alpaca_8000.json`.
 ```
-cd data/generation
-
-bash generate.sh ../../models/Llama-3.2-3B wikitext ../datasets/Llama-3.2-3B/ 16 3000
-bash generate.sh ../../models/Llama-3.2-3B alpaca ../datasets/Llama-3.2-3B/ 16 5000
-
-# vllm
-python generate_vllm.py --base_model ../../models/Llama-3.2-3B --dataset_name wikitext --out_path ./datasets/Llama-3.2-3B/ --max_sample 3000
-
-python generate_vllm.py --base_model ../../models/Llama-3.2-3B --dataset_name alpaca --out_path ./datasets/Llama-3.2-3B/ --max_sample 5000
-
-# change to path in .py
-python mix_data.py
+Reusing teacher data from Llama 2 7B model
 ```
 
 ## 3. Training workflow
@@ -122,7 +111,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/Llama-3-3B/mix_wiki_alpaca_8000.json ./ckpts/Llama-3.2-3B/int2-g128/ ./ckpts/Llama-3.2-3B/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json ./ckpts/Llama-3.2-3B/int2-g128/ ./ckpts/Llama-3.2-3B/int2-g128/runs/ 4
 ```
 
 ### Monitoring
