@@ -27,7 +27,6 @@ def compute_svd_spectrum(weights, device):
         return s.cpu().numpy()
     return None
 
-
 def load_model_weights(model_dir):
     try:
         model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.float32, low_cpu_mem_usage=True)
@@ -50,10 +49,30 @@ def load_model_weights(model_dir):
 
 IMPORTANT_LAYERS = ["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj"]
 
-
 def extract_block_number(key):
     match = re.search(r'layers\.(\d+)', key)
     return int(match.group(1)) if match else -1
+
+def plot_per_channel_overlaid_histograms(weights1, weights2, layer_name, output_dir="histograms", num_channels_to_plot=10):
+    """
+    Plots overlaid histograms for a subset of channels from two 2D weight tensors.
+    Assumes weights1 and weights2 have shape (channels, features).
+    """
+    num_channels = weights1.shape[0]
+    # Select evenly spaced channel indices if too many channels exist.
+    if num_channels > num_channels_to_plot:
+        indices = np.linspace(0, num_channels - 1, num_channels_to_plot, dtype=int)
+    else:
+        indices = range(num_channels)
+    for idx in indices:
+        ch_data1 = weights1[idx, :].detach().cpu().to(torch.float32).numpy()
+        ch_data2 = weights2[idx, :].detach().cpu().to(torch.float32).numpy()
+        # Limit number of samples if needed
+        if ch_data1.size > 1_000_000:
+            ch_data1 = np.random.choice(ch_data1, 1_000_000, replace=False)
+        if ch_data2.size > 1_000_000:
+            ch_data2 = np.random.choice(ch_data2, 1_000_000, replace=False)
+        plot_overlaid_histograms(ch_data1, ch_data2, f"{layer_name}_channel{idx}_overlay", output_dir)
 
 def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", last_n=None):
     selected_layers = layers if layers else IMPORTANT_LAYERS
@@ -78,6 +97,7 @@ def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", la
         if s1 is not None:
             print(f" - Top singular values (model1): {s1[:5]}")
 
+        # Plot aggregated histogram for model1 weights
         w1_sample = w1.detach().to(torch.float32).cpu().flatten()
         if w1_sample.numel() > 1_000_000:
             idx = torch.randperm(w1_sample.numel())[:1_000_000]
@@ -109,6 +129,10 @@ def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", la
             plot_histogram(w2_sample.numpy(), f"{safe_name}_model2_{H2:.4f}", "histograms")
             plot_overlaid_histograms(w1_sample.numpy(), w2_sample.numpy(),
                                      f"{safe_name}_overlay_{H1:.4f}_{H2:.4f}", "histograms")
+            
+            # Plot per-channel overlaid histograms comparing model1 and model2, if both are 2D.
+            if w1.dim() == 2 and w2.dim() == 2:
+                plot_per_channel_overlaid_histograms(w1, w2, safe_name, "histograms", num_channels_to_plot=10)
 
         results.append({
             'layer': name,
@@ -166,5 +190,6 @@ def main():
     print(f"Saved CSV summary to {csv_path}")
 
 if __name__ == '__main__':
-    #python weight_analysis.py --model_id Heisenger/Llama-2-7b-hf_1bit_int --compare_id meta-llama/Llama-2-7b-hf --last_n 10
+    # Example usage:
+    # python weight_analysis.py --model_id Heisenger/Llama-2-7b-hf_1bit_int --compare_id meta-llama/Llama-2-7b-hf --last_n 10
     main()
