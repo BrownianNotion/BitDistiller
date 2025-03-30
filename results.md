@@ -36,7 +36,7 @@ https://huggingface.co/BrownianNotion/TinyLlama_v1.1_mix_wikitext_alpaca_2bit_Bi
 
 | PPL | arc_easy | arc_challenge | piqa | winogrande | hellaswag | mmlu | QA Avg |
 |------|------------------|-------------------|------------------|------------------|------------------|------|--------|
-|  -  | - | 21.50 | 60.80 | 52.00 | 32.40 | - | 41.70 |
+|  23.76  | 35.90 ± 0.98 | 22.10 ± 1.21 | 60.45 ± 1.14 | 52.88 ± 1.40 | 32.35 ± 0.48 | - | 40.71 |
 
 ## 1bit 
 
@@ -45,7 +45,7 @@ https://huggingface.co/fredericowieser/TinyLlama_v1.1_mix_wikitext_alpaca_1bit_B
 
 | PPL  | arc_easy        | arc_challenge     | piqa           | winogrande      | hellaswag       | mmlu | QA Avg |
 |------|------------------|-------------------|------------------|------------------|------------------|------|--------|
-| - | -              | 24.70              | 52.80            | 51.20                |    25.70      | -    | 37.80  |
+| 2297.22 | 26.64 ± 0.91              | 21.50 ± 1.20             | 52.83 ± 1.16            | 51.22 ± 1.40                |    25.68 ± 0.44      | -    | 35.58  |
 
 
 ---
