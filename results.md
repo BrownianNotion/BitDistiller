@@ -126,7 +126,7 @@ https://huggingface.co/Niks898/TinyLlama_v1.1_2bit_int_ce_plus_cakld_20
 
 |     PPL      |  arc_easy  |arc_challenge|    piqa    | winogrande | hellaswag  |mmlu|QA Avg|
 |--------------|------------|-------------|------------|------------|------------|----|-----:|
-|2242.81 |35.40 ± 0.98|21.67 ± 1.20 |60.55 ± 1.14|51.93 ± 1.40|32.22 ± 0.47|-   | 40.36|
+|22.4281 |35.40 ± 0.98|21.67 ± 1.20 |60.55 ± 1.14|51.93 ± 1.40|32.22 ± 0.47|-   | 40.36|
 
 ### Impact of Group Size on Performance
 
