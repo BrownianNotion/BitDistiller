@@ -114,7 +114,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_64.json ./ckpts/tinyllama_v1.1/ternary-g128/ ./ckpts/tinyllama_v1.1/ternary-g128/runs/ 4
+bash train.sh ../data/datasets/tinyllama_v1.1/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/ternary-g128/ ./ckpts/tinyllama_v1.1/ternary-g128/runs/ 2
 ```
 
 ### Monitoring
@@ -125,7 +125,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=ckpts/tinyllama_v1.1/int2-g128/runs/ --port=8008
+tensorboard --logdir=ckpts/tinyllama_v1.1/ternary-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
