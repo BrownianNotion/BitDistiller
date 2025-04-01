@@ -53,6 +53,8 @@ class QLinear(nn.Linear):
 
         if quant_type == "ste-n2f3":
             self.weight_quantizer = SteN2F3Quantizer(q_group_size=q_group_size)
+        elif quant_type == "int3-asym":
+            self.weight_quantizer = SteInt3AsymQuantizer(q_group_size=q_group_size)
         elif quant_type == "int2-asym":
             self.weight_quantizer = SteInt2AsymQuantizer(q_group_size=q_group_size)
         elif quant_type == "int1-asym":
