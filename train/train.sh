@@ -30,10 +30,10 @@ deepspeed --num_gpus=1 train.py \
     --logging_steps 1 \
     --report_to tensorboard wandb \
     --deepspeed config/zero.json \
-    --bits 2 \
-    --quant_type int2-asym \
+    --bits 3 \
+    --quant_type int3-asym \
     --q_group_size 128 \
     --train_kd True \
     --kd_loss_type "cakld" \
     --max_train_samples 999999 \
-    --clip ../quantization/clip_cache/Llama-2-7b-hf/int2-g128.pt
+    --clip ../quantization/clip_cache/Llama-2-7b-hf/int3-g128.pt
