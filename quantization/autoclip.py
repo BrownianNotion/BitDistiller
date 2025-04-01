@@ -9,6 +9,7 @@ from quantizer import (
     pseudo_quantize_tensor,
     pseudo_quantize_tensor_1bit,
     pseudo_quantize_n2f3_tensor,
+    pseudo_quantize_tensor_ternary
 )
 from tqdm import tqdm
 from collections import defaultdict
