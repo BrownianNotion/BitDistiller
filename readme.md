@@ -128,7 +128,7 @@ cd train
 
 # Nice dashboard of train/validation loss and other metrics. Eval metrics won't appear
 # until an eval step has happened - this may take a while.
-tensorboard --logdir=ckpts/Llama-2-7b-hf/int2-g128/runs/ --port=8008
+tensorboard --logdir=ckpts/Llama-2-7b-hf/int4-g128/runs/ --port=8008
 
 # (In new terminal)
 # Shows GPU and GPU memory usage. This should be close to 100%/36.5GB for training.
@@ -162,7 +162,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --base_model Llama-2-7b-hf --quant_type int
+python upload_model.py train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400 3 --base_model Llama-2-7b-hf --quant_type int
 ```
 
 ## 5. Eval
@@ -172,14 +172,14 @@ python upload_model.py train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 2 --ba
 To run all evals, use the `generate_metrics.sh` with the model path, quant type and bits. This generates `metrics.json` in the model path. For example,
 ```
 cd test/general
-bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
+bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400 int 3 
 ```
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
+bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400 int 3 
 
-python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_2bit_int
+python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_3bit_int
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
