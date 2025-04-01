@@ -159,7 +159,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100 2 --quant_type int --extra_changes ce_loss 
+python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-200 1.58 --quant_type ternary
 ```
 
 ## 5. Eval
@@ -174,7 +174,7 @@ bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/ternary-g128/checkpoin
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/ternary-g128/checkpoint-100/metrics.json --model_id TinyLlama_v1.1
+python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/ternary-g128/checkpoint-200/metrics.json --model_id TinyLlama_v1.1_1.58bit_ternary
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
