@@ -74,4 +74,5 @@ def main():
 if __name__ == "__main__":
     # Example usage:
     # python weight_distribution.py --file_path ../quantization/clip_cache/TinyLlama_v1.1/int2-g128.pt --plot_name tiny_llama_2_bit_128g
+    # python weight_distribution.py --file_path ../quantization/clip_cache/TinyLlama_v1.1/ternary-g128.pt --plot_name tinyllama_ternary
     main()
