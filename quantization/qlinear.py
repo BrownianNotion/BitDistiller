@@ -51,14 +51,23 @@ class QLinear(nn.Linear):
     def __init__(self, input_features, output_features, bias=True, compute_dtype=torch.bfloat16, quant_type="ste-n2f3", q_group_size=128, device=None):
         super().__init__(input_features, output_features, bias, device)
 
+        supported_quant_types = [
+            "ste-n2f3",
+            "int2-asym",
+            "int1-asym"
+            "ternary"
+        ]
+
         if quant_type == "ste-n2f3":
             self.weight_quantizer = SteN2F3Quantizer(q_group_size=q_group_size)
         elif quant_type == "int2-asym":
             self.weight_quantizer = SteInt2AsymQuantizer(q_group_size=q_group_size)
         elif quant_type == "int1-asym":
             self.weight_quantizer = SteInt1AsymQuantizer(q_group_size=q_group_size)
+        elif quant_type == "ternary":
+            self.weight_quantizer = TernaryQuantizer(q_group_size=q_group_size)
         else:
-            raise ValueError(f"Has no support {quant_type}. Valid quant_type:[ste-n2f3, int2-asym]")
+            raise ValueError(f"Has no support {quant_type}. Valid quant_type: {supported_quant_types}")
         # self.quant_type = quant_type
         self.compute_dtype = compute_dtype
 
@@ -73,6 +82,8 @@ class QLinear(nn.Linear):
 
         bias = None if self.bias is None else self.bias.to(self.compute_dtype)
         out = None
+        
+        # Consider adding a layer norm for ternary quant
 
         quantize_weight = self.weight_quantizer(self.weight.to(self.compute_dtype))
         out = F.linear(x, quantize_weight, bias).to(inp_dtype)

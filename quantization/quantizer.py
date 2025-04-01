@@ -145,7 +145,10 @@ def real_quantize_model_weight(
     gc.collect()
 
 
-
+def pseudo_quantize_tensor_ternary(w, q_group_size=-1):
+    quantizer = TernaryQuantizer(q_group_size=q_group_size)
+    w = quantizer(w)
+    return w
 
 def pseudo_quantize_n2f3_tensor(w, q_group_size=-1):
     quantizer = SteN2F3Quantizer(q_group_size=q_group_size)
@@ -257,6 +260,32 @@ class SteInt1AsymQuantizer(nn.Module):
         assert torch.isnan(x_q).sum() == 0
         x_q = x_q.reshape(org_w_shape)
         return x_q
+
+class TernaryQuantizer(nn.Module):
+    def __init__(self, q_group_size=128):
+        super().__init__()
+        self.q_group_size = q_group_size
+
+    def forward(self, x):
+        org_w_shape = x.shape
+
+        if self.q_group_size > 0:
+            assert org_w_shape[-1] % self.q_group_size == 0
+            x = x.reshape(-1, self.q_group_size)
+        assert x.dim() == 2
+
+        scales = 1.0 / x.abs().mean(dim=1, keepdim=True).clamp(min=1e-5)
+
+        assert torch.isnan(scales).sum() == 0
+        assert torch.isnan(x).sum() == 0
+
+        x = Round.apply(x * scales).clamp_(-1, 1) / scales
+
+        assert torch.isnan(x).sum() == 0
+
+        x = x.reshape(org_w_shape)
+
+        return x
 
 class SteN2F3Quantizer(nn.Module):
     def __init__(self, q_group_size=128):

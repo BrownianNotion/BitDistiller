@@ -66,9 +66,11 @@ def auto_2clip_layer(w, input_feat, n_bit, q_config,
                         q_w = pseudo_quantize_tensor(cur_w, n_bit=n_bit, zero_point=True, q_group_size=q_config['q_group_size'])
                 elif q_config["quant_type"] == "nf3":
                     q_w = pseudo_quantize_n2f3_tensor(cur_w, q_group_size=q_config['q_group_size'])
+                elif q_config["quant_type"] == "ternary":
+                    q_w = pseudo_quantize_tensor(cur_w, q_group_size=q_config['q_group_size'])
                 else:
                     quant_type = q_config["quant_type"]
-                    raise ValueError(f"Has no support {quant_type}. Valid quant_type:[int, nf3]")
+                    raise ValueError(f"Has no support {quant_type}. Valid quant_type:[int, nf3, ternary]")
                     
                 cur_out = (input_feat * q_w).sum(dim=-1)
 
