@@ -409,7 +409,7 @@ def train():
     get_model_name = lambda path : os.path.basename(os.path.dirname(path))
     student_name = get_model_name(model.config._name_or_path) 
     teacher_name = get_model_name(teacher_model.config._name_or_path) 
-    bits = training_args.bits if training_args.quant_type is not "ternary" else "1.58"
+    bits = training_args.bits if training_args.quant_type != "ternary" else "1.58"
 
     wandb.init(
         entity="DeepFriedNLP",
