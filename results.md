@@ -98,6 +98,18 @@ https://huggingface.co/BrownianNotion/Llama-2-7b-hf_2bit_int
 
 ---
 
+### Llama-2-7b-hf_3bit_int
+https://huggingface.co/BrownianNotion/Llama-2-7b-hf_3bit_int
+
+## Metrics
+
+|PPL |  arc_easy  |arc_challenge|    piqa    | winogrande | hellaswag  |mmlu|QA Avg|
+|---:|------------|-------------|------------|------------|------------|----|-----:|
+|5.99|74.66 ± 0.89|39.76 ± 1.43 |76.88 ± 0.98|67.88 ± 1.31|55.16 ± 0.50|-   | 62.87|
+
+* Note this is checkpoint200, which had the best eval loss.
+
+
 ## Llama-3.2-3B_2bit_int 
 
 https://huggingface.co/acoleman/Llama-3.2-3B_2bit_int
