@@ -81,3 +81,12 @@ def pseudo_quantize_model_weight(
             for n, m in named_linears.items():
                 # m.cuda()
                 m.weight.data = quantizer(m.weight.data)
+
+    elif quant_type == "ternary":
+        quantizer = TernaryQuantizer(q_group_size=q_config["q_group_size"])   
+        layers = model.model.layers
+        for i in tqdm(range(len(layers)), desc=f"pseudo {quant_type} weight quantization..."):
+            named_linears = get_named_linears(layers[i])
+            for n, m in named_linears.items():
+                # m.cuda()
+                m.weight.data = quantizer(m.weight.data)
