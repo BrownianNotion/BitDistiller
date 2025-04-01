@@ -31,7 +31,7 @@ deepspeed --num_gpus=1 train.py \
     --report_to tensorboard wandb \
     --deepspeed config/zero.json \
     --bits 2 \
-    --quant_type int2-asym \
+    --quant_type ternary \
     --q_group_size 128 \
     --train_kd True \
     --kd_loss_type "cakld" \
