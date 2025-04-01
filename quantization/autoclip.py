@@ -249,7 +249,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
     parser.add_argument('--w_bit', type=int, default=2, help='bits of weight')
     parser.add_argument('--q_group_size', type=int, default=128)
-    parser.add_argument('--quant_type', type=str, default="int", help="quant_type", choices=["int", "nf3"])
+    parser.add_argument('--quant_type', type=str, default="int", help="quant_type", choices=["int", "nf3", "ternary"])
     parser.add_argument('--no_zero_point', action='store_true',
                         help="disable zero_point")
     parser.add_argument('--run_clip', action='store_true',
