@@ -162,7 +162,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400 3 --base_model Llama-2-7b-hf --quant_type int
+python upload_model.py train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-200 3 --base_model Llama-2-7b-hf --quant_type int
 ```
 
 ## 5. Eval
@@ -179,7 +179,7 @@ user name.
 ```
 bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400 int 3 
 
-python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_3bit_int
+python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int3-g128/checkpoint-200/metrics.json --model_id Llama-2-7b-hf_3bit_int
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
