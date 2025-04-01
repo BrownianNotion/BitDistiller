@@ -79,7 +79,7 @@ Clips/quantises the teacher model (eg. Llama-2-7b-hf below) to get initial weigh
 ```
 cd quantization
 
-CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-2-7b-hf --calib_dataset pile --quant_type int --w_bit 2 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-2-7b-hf/int2-g128.pt
+CUDA_VISIBLE_DEVICES=0 python autoclip.py --model_path ../models/Llama-2-7b-hf --calib_dataset pile --quant_type int --w_bit 3 --q_group_size 128 --run_clip --dump_clip ./clip_cache/Llama-2-7b-hf/int3-g128.pt
 ```
 
 ### Generate Teacher Data
@@ -177,16 +177,9 @@ bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-40
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-<<<<<<< HEAD
-python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-100/metrics.json --model_id 2-bit-baseline
-=======
 bash generate_metrics.sh ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 int 2 
-<<<<<<< HEAD
-python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400 metrics.json --model_id Llama-2-7b-hf_2bit_int
->>>>>>> 5b3ddcf (Add eval PPL to notes)
-=======
+
 python upload_metrics.py --metrics_json ../../train/ckpts/Llama-2-7b-hf/int2-g128/checkpoint-400/metrics.json --model_id Llama-2-7b-hf_2bit_int
->>>>>>> aae0ca7 (add further notes, fix typos to eval)
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
