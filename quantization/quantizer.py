@@ -274,12 +274,15 @@ class TernaryQuantizer(nn.Module):
             x = x.reshape(-1, self.q_group_size)
         assert x.dim() == 2
 
-        scales = 1.0 / x.abs().mean(dim=1, keepdim=True).clamp(min=1e-5)
+        max_val = x.amax(dim=1, keepdim=True)  # (num_groups, 1)
+        min_val = x.amin(dim=1, keepdim=True)  # (num_groups, 1)
+
+        scales = (max_val - min_val).clamp(min=1e-5)
 
         assert torch.isnan(scales).sum() == 0
         assert torch.isnan(x).sum() == 0
 
-        x = Round.apply(x * scales).clamp_(-1, 1) / scales
+        x = Round.apply(x / scales).clamp_(-1, 1) * scales
 
         assert torch.isnan(x).sum() == 0
 
