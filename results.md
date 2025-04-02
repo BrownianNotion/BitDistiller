@@ -75,12 +75,20 @@ https://huggingface.co/VictorFiz/TinyLlama_v1.1_2bit_int_llama2_7b_teacher
 
 
 ### TinyLlama 2bit (3B Teacher)
+
+https://huggingface.co/acoleman/TinyLlama_v1.1_2bit_int_3b_teacher
+
+
 | PPL   | arc_easy         | arc_challenge     | piqa            | winogrande       | hellaswag        | mmlu | QA Avg |
 |-------|------------------|-------------------|------------------|------------------|------------------|------|--------|
 | 17.17 | 45.16 ± 1.02     | 21.84 ± 1.21      | 63.22 ± 1.13     | 51.78 ± 1.40     | 34.14 ± 0.47     | -    | 43.23  |
 
 
 ### Llama 3.2 3B 2bit (7B Teacher)
+
+https://huggingface.co/Heisenger/Llama-3.2-3B_2bit_int_7B_teacher
+
+
 |   PPL   |  arc_easy  |arc_challenge|    piqa    | winogrande | hellaswag  |mmlu|QA Avg|
 |--------:|------------|-------------|------------|------------|------------|----|-----:|
 |914841.62|25.25 ± 0.89|20.14 ± 1.17 |53.70 ± 1.16|48.70 ± 1.40|25.59 ± 0.44|-   | 34.68|
