@@ -159,7 +159,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-200 1.58 --quant_type ternary
+python upload_model.py train/ckpts/tinyllama_v1.1/ternary-g128/checkpoint-200 1.58 --quant_type ternary
 ```
 
 ## 5. Eval
