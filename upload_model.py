@@ -3,7 +3,7 @@ from huggingface_hub import HfApi, create_repo, upload_large_folder
 
 parser = argparse.ArgumentParser()
 parser.add_argument("model_path", type=str, help="path to model checkpoint/folder, including tensorboard logs")
-parser.add_argument("bits", type=int, help="num of bits the model is quantised to")
+parser.add_argument("bits", type=str, help="num of bits the model is quantised to")
 parser.add_argument("--quant_type", type=str, default="int", help="Quantisation method")
 parser.add_argument("--extra_changes", type=str, default="", help="String summarising extra changes such as new losses/architecture. Eg. ce_loss")
 parser.add_argument("--base_model", type=str, default="TinyLlama_v1.1", help="Base model that we quantised, defaults to TinyLlama_v1.1")
