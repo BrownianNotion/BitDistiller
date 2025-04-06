@@ -9,8 +9,8 @@ sudo apt install nvtop
 # install required packages
 sudo apt install -y python3.9 python3.9-venv python3.9-dev
 python3.9 -m venv BitDistillerVenv
-source BitDistillerVenv/bin/activate
-pip install -r requirements.txt
+source BitDistillerVenv/bin/activate 
+pip install -r requirements.txt --timeout=1000 --retries=15
 
 # download TinyLlama locally, since repo requires this to run
 python models/download_model.py
