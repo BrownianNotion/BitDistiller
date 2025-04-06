@@ -7,8 +7,11 @@ from logging import getLogger
 from transformers import AutoTokenizer, LlamaTokenizer, AutoModelForCausalLM
 import sys
 sys.path.append("../")
+sys.path.append("../../")
 from test_utils import pseudo_quantize_model_weight
 import json
+
+from quantization.autoclip import apply_clip
 
 def get_wikitext2(nsamples, seed, seqlen, model):
     from datasets import load_dataset
@@ -137,6 +140,8 @@ def main():
     parser.add_argument('--quant_type', type=str, default="int", help='Quantization data type')
     parser.add_argument('--bits', type=int, default=3, help='Quantization bits')
     parser.add_argument('--group_size', type=int, default=128, help='Quantization group size')
+    parser.add_argument('--clipped_untrained', type=bool, default=False, help="whether to evaluate clipped untrained version instead")
+    parser.add_argument('--clip_path', type=str, default=None)
 
     args = parser.parse_args()
     print(args)
@@ -153,6 +158,12 @@ def main():
     pseudo_quantize_model_weight(
         model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
     )
+    
+    if args.clipped_untrained:
+        print("Loading pre-computed Clipping results from", args.clip)
+        clip_results = torch.load(args.clip, weights_only=True)
+        apply_clip(model, clip_results)
+        print("Clipping init successfully!")
 
     dev = torch.device(args.dev)
 
