@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import time
 from logging import getLogger
-from transformers import AutoTokenizer, LlamaTokenizer, AutoModelForCausalLM
+from transformers import AutoConfig, AutoTokenizer, LlamaTokenizer, AutoModelForCausalLM
 import sys
 sys.path.append("../")
 sys.path.append("../../")
@@ -142,28 +142,36 @@ def main():
     parser.add_argument('--group_size', type=int, default=128, help='Quantization group size')
     parser.add_argument('--clipped_untrained', type=bool, default=False, help="whether to evaluate clipped untrained version instead")
     parser.add_argument('--clip_path', type=str, default=None)
+    parser.add_argument('--random', type=bool, default=False, help="whether to eval random baseline")
 
     args = parser.parse_args()
     print(args)
     
-
-    print("loading the model...")
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, use_safetensors=True, low_cpu_mem_usage=True)
-
-    q_config = {
-        "zero_point": True,  # by default True
-        "q_group_size": args.group_size,  # whether to use group quantization
-    }
-    model = model.cuda()
-    pseudo_quantize_model_weight(
-        model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
-    )
     
-    if args.clipped_untrained:
-        print("Loading pre-computed Clipping results from", args.clip_path)
-        clip_results = torch.load(args.clip_path, weights_only=True)
-        apply_clip(model, clip_results)
-        print("Clipping init successfully!")
+    print("loading the model...")
+    
+    if args.random:
+        # inherit config (i.e architecture) but with random weights
+        config = AutoConfig.from_pretrained(f"{args.model}/config.json")
+        model = AutoModelForCausalLM.from_config(config)
+        model = model.cuda()
+    else:
+        model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, use_safetensors=True, low_cpu_mem_usage=True)
+
+        q_config = {
+            "zero_point": True,  # by default True
+            "q_group_size": args.group_size,  # whether to use group quantization
+        }
+        model = model.cuda()
+        pseudo_quantize_model_weight(
+            model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
+        )
+        
+        if args.clipped_untrained:
+            print("Loading pre-computed Clipping results from", args.clip_path)
+            clip_results = torch.load(args.clip_path, weights_only=True)
+            apply_clip(model, clip_results)
+            print("Clipping init successfully!")
 
     dev = torch.device(args.dev)
 
