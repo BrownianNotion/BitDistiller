@@ -53,7 +53,7 @@ def extract_block_number(key):
     match = re.search(r'layers\.(\d+)', key)
     return int(match.group(1)) if match else -1
 
-def plot_per_channel_overlaid_histograms(weights1, weights2, layer_name, output_dir="histograms", num_channels_to_plot=10):
+def plot_per_channel_overlaid_histograms(weights1, weights2, layer_name, output_dir="histograms/per_channel", num_channels_to_plot=10):
     """
     Plots overlaid histograms for a subset of channels from two 2D weight tensors.
     Assumes weights1 and weights2 have shape (channels, features).
@@ -74,7 +74,7 @@ def plot_per_channel_overlaid_histograms(weights1, weights2, layer_name, output_
             ch_data2 = np.random.choice(ch_data2, 1_000_000, replace=False)
         plot_overlaid_histograms(ch_data1, ch_data2, f"{layer_name}_channel{idx}_overlay", output_dir)
 
-def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", last_n=None):
+def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", last_n=None, histogram_dir="histograms"):
     selected_layers = layers if layers else IMPORTANT_LAYERS
     results = []
 
@@ -102,7 +102,7 @@ def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", la
         if w1_sample.numel() > 1_000_000:
             idx = torch.randperm(w1_sample.numel())[:1_000_000]
             w1_sample = w1_sample[idx]
-        plot_histogram(w1_sample.numpy(), f"{safe_name}_model1_{H1:.4f}", "histograms")
+        # plot_histogram(w1_sample.numpy(), f"{safe_name}_model1_{H1:.4f}", "histograms")
 
         H2, s2, norm_diff = None, None, None
 
@@ -126,13 +126,13 @@ def analyze_weights(model1_dict, model2_dict=None, layers=None, device="cpu", la
                 idx = torch.randperm(w2_sample.numel())[:1_000_000]
                 w2_sample = w2_sample[idx]
 
-            plot_histogram(w2_sample.numpy(), f"{safe_name}_model2_{H2:.4f}", "histograms")
+            # plot_histogram(w2_sample.numpy(), f"{safe_name}_model2_{H2:.4f}", "histograms")
             plot_overlaid_histograms(w1_sample.numpy(), w2_sample.numpy(),
-                                     f"{safe_name}_overlay_{H1:.4f}_{H2:.4f}", "histograms")
+                                     f"{safe_name}_overlay_{H1:.4f}_{H2:.4f}", histogram_dir)
             
             # Plot per-channel overlaid histograms comparing model1 and model2, if both are 2D.
             if w1.dim() == 2 and w2.dim() == 2:
-                plot_per_channel_overlaid_histograms(w1, w2, safe_name, "histograms", num_channels_to_plot=10)
+                plot_per_channel_overlaid_histograms(w1, w2, safe_name, histogram_dir + "/per_channel", num_channels_to_plot=10)
 
         results.append({
             'layer': name,
@@ -160,6 +160,8 @@ def main():
     model1_dir = snapshot_download(args.model_id)
     model1_dict = load_model_weights(model1_dir)
 
+    histogram_dir = "visualizations/histograms/" + args.model_id.split("/")[-1] + "_" + args.compare_id.split("/")[-1]
+
     model2_dict = None
     if args.compare_id:
         print(f"Downloading comparison model: {args.compare_id}")
@@ -168,9 +170,9 @@ def main():
 
     print(f"Using device: {args.device}")
     os.makedirs("histograms", exist_ok=True)
-    csv_path = os.path.join("histograms", "layerwise_analysis.csv")
+    csv_path = os.path.join(histogram_dir, "layerwise_analysis.csv")
 
-    results = analyze_weights(model1_dict, model2_dict, args.layers, args.device, args.last_n)
+    results = analyze_weights(model1_dict, model2_dict, args.layers, args.device, args.last_n, histogram_dir)
     with open(csv_path, "w", newline="") as csvfile:
         fieldnames = [
             "layer",

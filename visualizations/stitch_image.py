@@ -40,7 +40,7 @@ def stitch_images(image_dir, output_path="stitched.png", cols=4, padding=10, res
     print(f"Stitched image saved to: {output_path}")
 
 if __name__ == "__main__":
-    # python stitch_image.py --image_dir histograms --output stitched.png --cols 4
+    # python stitch_image.py --image_dir visualizations/histograms/[name_of_dir] --output visualizations/histograms/[name_of_dir]/stitched.png --cols 4
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_dir", type=str, required=True, help="Directory containing .png files")
