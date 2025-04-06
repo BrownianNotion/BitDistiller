@@ -12,7 +12,9 @@ import sys
 import json
 
 sys.path.append("../")
+sys.path.append("../../")
 from test_utils import pseudo_quantize_model_weight
+from quantization.autoclip import apply_clip
 
 if __name__ == '__main__':
     import argparse
@@ -29,6 +31,8 @@ if __name__ == '__main__':
     parser.add_argument('--group_size', type=int, default=128, help='evaluation tasks')
     parser.add_argument('--quant_type', type=str, default="int", help='evaluation tasks')
     parser.add_argument('--num_fewshot', type=int, default=0, help='evaluation tasks')
+    parser.add_argument('--clipped_untrained', type=bool, default=False, help="whether to evaluate clipped untrained version instead")
+    parser.add_argument('--clip_path', type=str, default=None)
     args = parser.parse_args()
     print(args)
     if "hendrycksTest" not in args.eval_tasks:
@@ -49,6 +53,12 @@ if __name__ == '__main__':
         pseudo_quantize_model_weight(
             model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
         )
+
+    if args.clipped_untrained:
+        print("Loading pre-computed Clipping results from", args.clip_path)
+        clip_results = torch.load(args.clip_path, weights_only=True)
+        apply_clip(model, clip_results)
+        print("Clipping init successfully!")
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
 

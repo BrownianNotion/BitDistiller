@@ -160,8 +160,8 @@ def main():
     )
     
     if args.clipped_untrained:
-        print("Loading pre-computed Clipping results from", args.clip)
-        clip_results = torch.load(args.clip, weights_only=True)
+        print("Loading pre-computed Clipping results from", args.clip_path)
+        clip_results = torch.load(args.clip_path, weights_only=True)
         apply_clip(model, clip_results)
         print("Clipping init successfully!")
 
