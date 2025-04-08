@@ -3,7 +3,7 @@ from PIL import Image
 import math
 import argparse
 
-def stitch_images(image_dir, output_path="stitched.png", cols=4, padding=10, resize_width=None):
+def stitch_images(image_dir, output_path="stitched.png", cols=5, padding=10, resize_width=None):
     # Get all .png files, sorted by filename
     image_files = sorted([f for f in os.listdir(image_dir) if f.endswith(".png")])
     if not image_files:
@@ -40,7 +40,7 @@ def stitch_images(image_dir, output_path="stitched.png", cols=4, padding=10, res
     print(f"Stitched image saved to: {output_path}")
 
 if __name__ == "__main__":
-    # python stitch_image.py --image_dir visualizations/histograms/[name_of_dir] --output visualizations/histograms/[name_of_dir]/stitched.png --cols 4
+    # python stitch_image.py --image_dir visualizations/histograms/[name_of_dir] --output visualizations/histograms/[name_of_dir]/stitched.png --cols 5
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_dir", type=str, required=True, help="Directory containing .png files")

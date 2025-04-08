@@ -4,13 +4,22 @@ import numpy as np
 import argparse
 import os
 
-
 def plot_overlaid_histograms(data1, data2, title, save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
     plt.figure(figsize=(8, 5))
-    plt.hist(data1, bins=100, alpha=0.6, label="Quantized", color="blue", edgecolor="white", log=True)
-    plt.hist(data2, bins=100, alpha=0.6, label="Original", color="orange", edgecolor="white", log=True)
+
+    # Compute bins separately for each histogram
+    hist1, bins1 = np.histogram(data1, bins=100)
+    hist2, bins2 = np.histogram(data2, bins=100)
+
+    # Use bin centers
+    centers1 = (bins1[:-1] + bins1[1:]) / 2
+    centers2 = (bins2[:-1] + bins2[1:]) / 2
+
+    plt.bar(centers1, hist1, width=(bins1[1] - bins1[0]), alpha=0.6, label="Quantized", color="blue", edgecolor="white", log=True)
+    plt.bar(centers2, hist2, width=(bins2[1] - bins2[0]), alpha=0.6, label="Original", color="orange", edgecolor="white", log=True)
+
     plt.title(title)
     plt.xlabel("Weight Values")
     plt.ylabel("Log Count")
@@ -19,6 +28,20 @@ def plot_overlaid_histograms(data1, data2, title, save_dir):
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, f"{title}.png")) 
     plt.close()
+# def plot_overlaid_histograms(data1, data2, title, save_dir):
+#     os.makedirs(save_dir, exist_ok=True)
+
+#     plt.figure(figsize=(8, 5))
+#     plt.hist(data1, bins=100, alpha=0.6, label="Quantized", color="blue", edgecolor="white", log=True)
+#     plt.hist(data2, bins=100, alpha=0.6, label="Original", color="orange", edgecolor="white", log=True)
+#     plt.title(title)
+#     plt.xlabel("Weight Values")
+#     plt.ylabel("Log Count")
+#     plt.legend()
+#     plt.grid(True)
+#     plt.tight_layout()
+#     plt.savefig(os.path.join(save_dir, f"{title}.png")) 
+#     plt.close()
 
 
 
