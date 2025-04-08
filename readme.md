@@ -112,7 +112,7 @@ tmux attach -t session_name
 5. Run the training command below. Once the model starts training, see [Monitoring](#monitoring) below for how to monitor training.
 ```
 cd train
-bash train.sh ../data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/int2-g128/ ./ckpts/tinyllama_v1.1/int2-g128/runs/ 4
+bash train.sh ../data/datasets/Llama-3-3B/mix_wiki_alpaca_8000.json ./ckpts/tinyllama_v1.1/int2-g128/ ./ckpts/tinyllama_v1.1/int2-g128/runs/ 4
 ```
 
 ### Monitoring
@@ -157,7 +157,7 @@ This uploads the model to the hugging face repo `your_username/model_name`. Mode
 
 **Example Usage**
 ```
-python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-400 --quant_type int --extra_changes 7B_data 
+python upload_model.py train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-400 --quant_type int --extra_changes 3B_data 
 ```
 
 ## 5. Eval
@@ -172,7 +172,7 @@ bash generate_metrics.sh ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-4
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-400/metrics.json --model_id TinyLlama_v1.1_2bit_int_7B_data 
+python upload_metrics.py --metrics_json ../../train/ckpts/tinyllama_v1.1/int2-g128/checkpoint-400/metrics.json --model_id TinyLlama_v1.1_2bit_int_3B_data 
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
