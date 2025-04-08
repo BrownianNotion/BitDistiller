@@ -65,3 +65,4 @@ coverage.xml
 cover/
 
 BitDistillerVenv/
+*.DS_Store
