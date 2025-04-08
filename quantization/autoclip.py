@@ -222,6 +222,7 @@ def main(args, q_config):
         exit()
 
     model, enc = build_model_and_enc(args.model_path)
+    model.cuda()
 
     if args.run_clip:
         assert args.dump_clip, "Please save the awq results with --dump_awq"
