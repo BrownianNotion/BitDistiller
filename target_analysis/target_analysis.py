@@ -3,8 +3,9 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 import random
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 import torch
+from huggingface_hub import hf_hub_download
 
 
 def extract_model_name(file_path):
@@ -29,7 +30,7 @@ def compute_perplexities(data, model, tokenizer, max_length=2048):
     return perplexities
 
 
-def analyze_distributions(file1, file2, num_bootstrap=1000):
+def analyze_distributions(file1, file2, eval_model_name="meta-llama/Llama-2-3b-hf", num_bootstrap=1000):
     def load_data(file_path):
         with open(file_path, "r") as f:
             data = [json.loads(line.strip()) for line in f]
@@ -52,13 +53,9 @@ def analyze_distributions(file1, file2, num_bootstrap=1000):
             unique_words = set(words)
             unique_word_ratios.append(len(unique_words) / len(words) if words else 0)
             word_counts = Counter(words)
-            repeated_words = sum(
-                count - 1 for count in word_counts.values() if count > 1
-            )
+            repeated_words = sum(count - 1 for count in word_counts.values() if count > 1)
             repetition_rates.append(repeated_words / len(words) if words else 0)
-            non_chars = sum(
-                1 for char in text if not char.isalnum() and not char.isspace()
-            )
+            non_chars = sum(1 for char in text if not char.isalnum() and not char.isspace())
             non_char_ratios.append(non_chars / len(text) if len(text) > 0 else 0)
 
         return {
@@ -82,11 +79,32 @@ def analyze_distributions(file1, file2, num_bootstrap=1000):
         print("One or both datasets are empty after filtering.")
         return None
 
-    # Load evaluation model once (you can switch between 3B and 7B below)
-    eval_model_name = "meta-llama/Llama-2-3b-hf"
+    # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(eval_model_name)
+    # Step 1: Load raw config dict
+
+    # # Manually download and patch config.json
+    # config_path = hf_hub_download(repo_id=eval_model_name, filename="config.json")
+    # with open(config_path, "r") as f:
+    #     config_dict = json.load(f)
+
+    # # Patch rope_scaling if needed
+    # if "rope_scaling" in config_dict and "type" not in config_dict["rope_scaling"]:
+    #     print("Patching rope_scaling for LLaMA 3 config...")
+    #     config_dict["rope_scaling"] = {"type": "linear", "factor": 1.0}
+
+    # # Now build a config object from the patched dict
+    # config = AutoConfig.from_dict(config_dict)
+    # # Step 2: Patch rope_scaling before instantiating
+    # if "rope_scaling" in config_dict and "type" not in config_dict["rope_scaling"]:
+    #     print("Patching rope_scaling for LLaMA 3 config...")
+    #     config_dict["rope_scaling"] = {"type": "linear", "factor": 1.0}
+
+    # # Step 3: Now instantiate the config safely
+    # config = AutoConfig.from_dict(config_dict)
+    # Load model with config
     model = AutoModelForCausalLM.from_pretrained(
-        eval_model_name, torch_dtype=torch.float16, device_map="auto"
+        eval_model_name, torch_dtype=torch.float16, device_map="auto" # config=config,
     )
     model.eval()
 
@@ -130,7 +148,8 @@ def analyze_distributions(file1, file2, num_bootstrap=1000):
 # Run analysis
 if __name__ == "__main__":
     file1 = "data/datasets/Llama-2-7b-hf/mix_wiki_alpaca_8000.json"
-    file2 = "data/datasets/Llama-2-3b-hf/mix_wiki_alpaca_8000.json"
-    results = analyze_distributions(file1, file2)
+    file2 = "data/datasets/Llama-3-3B/mix_wiki_alpaca_8000.json"
+    eval_model = "meta-llama/Llama-2-7b-hf" #"meta-llama/Llama-3.2-3B"  # or try Llama-2-7b-hf if you have enough VRAM
+    results = analyze_distributions(file1, file2, eval_model_name=eval_model)
     if results is not None:
         print(results.to_string(index=False))
