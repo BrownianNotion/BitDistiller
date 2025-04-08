@@ -15,4 +15,4 @@ pip install -r requirements.txt
 # download TinyLlama locally, since repo requires this to run
 python models/download_model.py
 
-wandb login
+# wandb login
