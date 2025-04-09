@@ -44,8 +44,9 @@ if __name__ == '__main__':
                                                 use_safetensors=True,
                                                 device_map='auto'
                                                 )
-        
-    if args.quant_type is not None:
+    model = model.cuda() 
+
+    if args.quant_type is not None and args.bits > 0:
         q_config = {
             "zero_point": True,  # by default True
             "q_group_size": args.group_size,  # whether to use group quantization

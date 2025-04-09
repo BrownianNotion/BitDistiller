@@ -150,14 +150,17 @@ def main():
     print("loading the model...")
     model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, use_safetensors=True, low_cpu_mem_usage=True)
 
+    model = model.cuda()
+
     q_config = {
         "zero_point": True,  # by default True
         "q_group_size": args.group_size,  # whether to use group quantization
     }
-    model = model.cuda()
-    pseudo_quantize_model_weight(
-        model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
-    )
+
+    if args.bits > 0:
+        pseudo_quantize_model_weight(
+            model, w_bit=args.bits, q_config=q_config, quant_type=args.quant_type
+        )
     
     if args.clipped_untrained:
         print("Loading pre-computed Clipping results from", args.clip_path)
