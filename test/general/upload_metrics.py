@@ -62,7 +62,7 @@ card = ModelCard.from_template(
 api = HfApi()
 username = api.whoami()['name']
 create_repo(repo_id=args.model_id, repo_type="model", exist_ok=True)
-repo_id = {username}/{args.model_id}
+repo_id = f"{username}/{args.model_id}"
 card.push_to_hub(repo_id=repo_id, commit_message="Upload model metrics")
 
-print(f"\033[32mSuccessfully uploaded metrics to {repo_id}[0m")
+print(f"\033[32mSuccessfully uploaded metrics to {repo_id}")
