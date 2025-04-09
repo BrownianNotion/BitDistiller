@@ -172,7 +172,8 @@ bash generate_metrics.sh ../../models/TinyLlama_v1.1/ int 0 ../../quantization/c
 Then run `upload_metrics.py` to automatically upload the metrics to hugging face, specifying the path to the `metrics.json` and the hugging face model name without your
 user name.
 ```
-python upload_metrics.py --metrics_json ../../models/TinyLlama_v1.1/metrics.json --model_id TinyLlama_v1.1_full_precision_baseline
+bash generate_metrics.sh ../../models/Llama-2-7b-hf/ int 0 ../../quantization/clip_cache/Llama-2-7b-hf/int2-g128.pt
+python upload_metrics.py --metrics_json ../../models/Llama-2-7b-hf/metrics.json --model_id Llama-2-7b-hf_full_precision_baseline
 ```
 **Note**: this does not run MMLU by default as it is expensive. 
 
