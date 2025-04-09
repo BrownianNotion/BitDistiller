@@ -25,8 +25,12 @@ def plot_overlaid_histograms(data1, data2, title, save_dir):
     plt.ylabel("Log Count")
     plt.legend()
     plt.grid(True)
+
+
+    plt.xlim(-0.5, 0.5)
+
     plt.tight_layout()
-    plt.savefig(os.path.join(save_dir, f"{title}.png")) 
+    plt.savefig(os.path.join(save_dir, f"{title}.pdf"), format='pdf', dpi=150, bbox_inches='tight') 
     plt.close()
 # def plot_overlaid_histograms(data1, data2, title, save_dir):
 #     os.makedirs(save_dir, exist_ok=True)
@@ -63,11 +67,12 @@ def plot_histogram(data, title, save_path, max_points=1_000_000):
     plt.bar(centers, hist, width=(bins[1] - bins[0]), alpha=0.7, edgecolor="white", log=True)
     plt.title(title)
     plt.xlabel("Weight Values")
-    plt.ylabel("Log Count")
     plt.grid(True)
+    plt.xlim(-0.5, 0.5)  # Set x-axis limits
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, format='pdf', dpi=150, bbox_inches='tight')
     plt.close()
+    
 
 # def plot_histogram(data, title, save_path):
 #     # plt.figure(figsize=(8, 5))
