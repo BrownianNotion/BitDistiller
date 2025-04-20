@@ -11,10 +11,16 @@ Forked from the BitDistiller [paper](http://arxiv.org/abs/2402.10631) repo https
       primaryClass={cs.CL}
 }
 ```
+## Repo Summary
 This is a student project with the goal being to explore unanswered questions from the BitDistiller paper such as:
-- How does the approach do on smaller models (eg. TinyLlama 1.1B)?
-- Does this approach work for 1/1.58 bit quantisation?
-- How does the choice of teacher model affect performance?
+1. How does the approach do on smaller models (eg. TinyLlama 1.1B)?
+2. Does this approach work for 1/1.58 bit quantisation?
+3. How does the choice of teacher model affect performance?
+
+The results of our experiments can be found in `results.md`. In the summary, the answers to the three questions above were:
+1. Yes, though not as well for 1B than 3B or 7B. The model degrades slightly more compared to its full-precision counterpart.
+2. No, we found that the model performed no better than a random baseline on a the same multiple-choice QA benchmarks as the original BitDistiller paper.
+3. Unclear. We found no statistically siginficant improvement or degradation for 1B, and conflicting data for 3B.
 
 ## Contents
 0. [Summary](#0-overall-workflow-summary)
