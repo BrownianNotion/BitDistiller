@@ -17,8 +17,8 @@ This is a student project with the goal being to explore unanswered questions fr
 2. Does this approach work for 1/1.58 bit quantisation?
 3. How does the choice of teacher model affect performance?
 
-The results of our experiments can be found in `results.md`. In the summary, the answers to the three questions above were:
-1. Yes, though not as well for 1B than 3B or 7B. The model degrades slightly more compared to its full-precision counterpart.
+The results of our experiments can be found in `results.md`. In summary, the answers to the three questions above were:
+1. Yes, though not as well for 1B than for 3B or 7B. The model degrades slightly more compared to its full-precision counterpart.
 2. No, we found that the model performed no better than a random baseline on a the same multiple-choice QA benchmarks as the original BitDistiller paper.
 3. Unclear. We found no statistically siginficant improvement or degradation for 1B, and conflicting data for 3B.
 
